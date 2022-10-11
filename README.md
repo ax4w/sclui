@@ -1,3 +1,3 @@
 # Simple Command Line User Interface
 
-A simple extensions for ncurses.h
+SCLUI extends ```curses.h``` with prebuild components to create simple but good looking Command Line User Interfaces!
