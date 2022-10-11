@@ -1,3 +1,3 @@
 # Simple Command Line User Interface
 
-A simple extensions for curses.h
+A simple extensions for ncurses.h
