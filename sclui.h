@@ -2,7 +2,6 @@
 #define SCLUI
 
 #include <curses.h>
-#include <ncurses.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <math.h>

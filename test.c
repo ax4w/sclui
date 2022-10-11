@@ -1,6 +1,6 @@
 #define SCLUI_C
 #include "sclui.h"
-#include <ncurses.h> 
+#include <curses.h> 
 #include <stdlib.h>
 
 void mainScreen();
