@@ -90,6 +90,8 @@ sclui_item* createItem(char *text, int x, int y);
 void addInteractableItem(sclui_screen *screen, sclui_interactable_item *item); 
 void addItem(sclui_screen *screen, sclui_item *item);
 
+void setup();
+
 #endif
 
 #define SCLUI_C
@@ -102,6 +104,13 @@ sclui_config gConfig = {
 void setConfig(int x, int y) { 
   gConfig.posX = x;
   gConfig.posY = y;
+}
+
+void setup() {
+  raw();
+  noecho();
+  start_color();
+  keypad(stdscr,TRUE);
 }
 
 sclui_screen *initScreen(char *title, int title_length, int interactableItemsCount, int itemsCount, int width, int height, int upKey, int downKey) {
