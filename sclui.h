@@ -31,6 +31,7 @@ typedef struct {
      * General
   */
   char* text;
+  int text_length;
   int x;
   int y;
   type t;
@@ -43,7 +44,6 @@ typedef struct {
   /*
     *Textbox
   */
-  int text_length;
   char *usrInput;
   int max_text_length;
   int current_input_length;
@@ -51,6 +51,7 @@ typedef struct {
 
 typedef struct {
   char *text;
+  int text_length;
   int x;
   int y;
 } sclui_item;
@@ -75,22 +76,57 @@ typedef struct {
 } sclui_screen; 
 
 
+/*
+====================Screen===============================
+*/
 void runScreen(sclui_screen *screen);
 void setConfig(int x, int y);
-sclui_screen *initScreen(char *title,int title_length, int interactableItemsCount,int itemsCount, 
+sclui_screen *initScreen(char *title, int interactableItemsCount,int itemsCount, 
     int width, int height, int navKey1, int navKey2); 
+void setup();
 
+/*
+===================Interactables=========================   
+*/
+
+//create
 sclui_interactable_item *createButton(char *text, void(*action)(),int x, int y);
-sclui_interactable_item *createTextBox(char *text, int x, int y, int text_length, int max_text_length);
+sclui_interactable_item *createTextBox(char *text, int x, int y, int max_text_length);
 
+//helper
 char *getTextboxText(sclui_interactable_item *textbox);
 int getTextboxTextLength(sclui_interactable_item *textbox);
+void setInteractableItemX(sclui_interactable_item *item, int x);
+void setInteractableItemY(sclui_interactable_item *item, int y);
 
+void centerInteractableItemX(sclui_screen *screen, sclui_interactable_item *item);
+void centerInteractableItemY(sclui_screen *screen, sclui_interactable_item *item);
+
+int getInteractableItemX(sclui_interactable_item *item);
+int getInteractableItemY(sclui_interactable_item *item);
+
+//add
+void addInteractableItem(sclui_screen *screen, sclui_interactable_item *item);
+
+/*
+==================Items===================================
+*/
+
+//create
 sclui_item* createItem(char *text, int x, int y);
-void addInteractableItem(sclui_screen *screen, sclui_interactable_item *item); 
-void addItem(sclui_screen *screen, sclui_item *item);
 
-void setup();
+//helper
+void addItem(sclui_screen *screen, sclui_item *item);
+void setItemX(sclui_item *item, int x);
+void setItemY(sclui_item *item, int y);
+
+void centerItemX(sclui_screen *screen, sclui_item *item);
+void centerItemY(sclui_screen *screen, sclui_item *item);
+
+int getItemX(sclui_item *item);
+int getItemY(sclui_item *item);
+
+
 
 #endif
 
@@ -113,7 +149,15 @@ void setup() {
   keypad(stdscr,TRUE);
 }
 
-sclui_screen *initScreen(char *title, int title_length, int interactableItemsCount, int itemsCount, int width, int height, int upKey, int downKey) {
+int getTextLength(char *s) {
+  int i = 0;
+  while(*s++ != '\0') {
+    i++;
+  }
+  return i;
+}
+
+sclui_screen *initScreen(char *title, int interactableItemsCount, int itemsCount, int width, int height, int upKey, int downKey) {
   sclui_screen *s = (sclui_screen*)calloc(1,sizeof(sclui_screen));
   s->interactable_items = (sclui_interactable_item**)calloc(interactableItemsCount,sizeof(sclui_interactable_item*));
   s->interactable_items_length = interactableItemsCount;
@@ -124,7 +168,7 @@ sclui_screen *initScreen(char *title, int title_length, int interactableItemsCou
   s->title = title;
   s->upKey = upKey;
   s->downKey = downKey;
-  s->title_length = title_length;
+  s->title_length = getTextLength(title);
   s->interactable_items_current_length = 0;
   s->items_current_length = 0;
   return s;
@@ -134,19 +178,21 @@ sclui_screen *initScreen(char *title, int title_length, int interactableItemsCou
 sclui_item *createItem(char *text, int x, int y) {
   sclui_item *s = (sclui_item*)calloc(1,sizeof(sclui_item));
   s->text = text;
+  s->text_length = getTextLength(text);
+  printw("%d",s->text_length);
   s->y = y;
   s->x = x;
   return s;
 }
 
-sclui_interactable_item *createTextBox(char *text, int x, int y,int text_length, int max_text_length) {
+sclui_interactable_item *createTextBox(char *text, int x, int y, int max_text_length) {
   sclui_interactable_item *s = (sclui_interactable_item*)calloc(1,sizeof(sclui_interactable_item));
   s->text = text;
   s->action = NULL;
   s->t = TEXTBOX;
   s->y = y;
   s->x = x;
-  s->text_length = text_length;
+  s->text_length = getTextLength(text);
   s->current_input_length = 0;
   s->max_text_length = max_text_length;
   s->usrInput = (char*)calloc(max_text_length,sizeof(char));
@@ -166,10 +212,47 @@ sclui_interactable_item *createButton(char *text, void(*action)(), int x, int y)
   sclui_interactable_item *s = (sclui_interactable_item*)calloc(1,sizeof(sclui_interactable_item));
   s->text = text;
   s->x = x;
+  s->text_length = getTextLength(text);
   s->y = y;
   s->t = BUTTON;
   s->action = action;
   return s;
+}
+
+int getInteractableItemX(sclui_interactable_item *item) {return item->x;}
+int getInteractableItemY(sclui_interactable_item *item) {return item->y;}
+
+int getItemX(sclui_item *item) {return item->x;}
+int getItemY(sclui_item *item) {return item->y;}
+
+
+void setInteractableItemX(sclui_interactable_item *item, int x) { item->x = x;}
+void setInteractableItemY(sclui_interactable_item *item, int y) { item->y = y;}
+void setItemX(sclui_item *item, int x) {item->x = x;}
+void setItemY(sclui_item *item, int y) {item->y = y;}
+
+
+void centerInteractableItemX(sclui_screen *screen, sclui_interactable_item *item) {
+  switch(item->t) {
+    case TEXTBOX:
+      setInteractableItemX(item,(screen->width/2) - ((item->text_length + item->max_text_length) / 2));
+      break;
+    default:
+      setInteractableItemX(item,(screen->width / 2) - (item->text_length / 2));
+      break;
+  }
+}
+
+void centerItemX(sclui_screen *screen, sclui_item *item) {
+  setItemX(item,(screen->width / 2) - (item->text_length / 2));
+}
+
+void centerItemY(sclui_screen * screen, sclui_item *item) {
+  setItemY(item,(screen->height / 2));
+}
+
+void centerInteractableItemY(sclui_screen * screen, sclui_interactable_item *item) {
+  setInteractableItemY(item,(screen->height / 2));
 }
 
 void addItem(sclui_screen *screen, sclui_item *item) {
