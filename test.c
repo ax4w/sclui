@@ -3,7 +3,7 @@
 #include "sclui.h"
 #include <curses.h> 
 #include <stdlib.h>
-
+#include <stdbool.h>
 void mainScreen();
 
 sclui_interactable_item *name = NULL;
@@ -13,6 +13,10 @@ void quit() {
   curs_set(1);
   endwin();
   exit(0);
+}
+
+bool isOne(char c) {
+  return c == '1';
 }
 
 void thrdScreen() { 
@@ -34,8 +38,8 @@ void thrdScreen() {
 void sndScreen() {
 
   sclui_screen *s2 = initScreen("Hello World", 4, 1, 40 , 20, KEY_UP, KEY_DOWN);
-  name = createTextBox("Name", 15, 5, 20);
-  says = createTextBox("Says", 15, 6, 20);
+  name = createTextBox("Name", NULL, 15, 5, 20);
+  says = createTextBox("Says",&isOne, 15, 6, 20);
   sclui_interactable_item *i3 = createButton("Next", &thrdScreen, 15, 8);
   sclui_interactable_item *i4 = createButton("Quit", &quit, 15, 9);
   centerInteractableItemX(s2, name);

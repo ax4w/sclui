@@ -45,6 +45,7 @@ typedef struct {
     *Textbox
   */
   char *usrInput;
+  bool (*filter)(char);
   int max_text_length;
   int current_input_length;
 } sclui_interactable_item;
@@ -91,7 +92,7 @@ void setup();
 
 //create
 sclui_interactable_item *createButton(char *text, void(*action)(),int x, int y);
-sclui_interactable_item *createTextBox(char *text, int x, int y, int max_text_length);
+sclui_interactable_item *createTextBox(char *text, bool(*filter)(char), int x, int y, int max_text_length);
 
 //helper
 char *getTextboxText(sclui_interactable_item *textbox);
@@ -183,13 +184,14 @@ sclui_item *createItem(char *text, int x, int y) {
   return s;
 }
 
-sclui_interactable_item *createTextBox(char *text, int x, int y, int max_text_length) {
+sclui_interactable_item *createTextBox(char *text, bool(*filter)(char), int x, int y, int max_text_length) {
   sclui_interactable_item *s = (sclui_interactable_item*)calloc(1,sizeof(sclui_interactable_item));
   s->text = text;
   s->action = NULL;
   s->t = TEXTBOX;
   s->y = y;
   s->x = x;
+  s->filter = filter;
   s->text_length = getTextLength(text);
   s->current_input_length = 0;
   s->max_text_length = max_text_length;
@@ -322,6 +324,10 @@ int updateInteractable(sclui_screen *screen, int iidx, int mov) {
   return iidx;
 }
 
+bool defaultTextBoxFilter(char c) {
+  return isalpha(c) || c == ' ';
+}
+
 void printFrame(sclui_screen *screen) {
   //clear old screen
   clear();
@@ -434,10 +440,12 @@ void runScreen(sclui_screen *screen) {
 
         }
       }
-      if(screen->interactable_items[iidx]->current_input_length < screen->interactable_items[iidx]->max_text_length &&
-          (isalpha(c) || c == ' ')) {
-        screen->interactable_items[iidx]->usrInput[screen->interactable_items[iidx]->current_input_length++] = c;
-        updateTextbox(screen->interactable_items[iidx], 1, 2);
+      if(screen->interactable_items[iidx]->current_input_length < screen->interactable_items[iidx]->max_text_length) {
+        if((screen->interactable_items[iidx]->filter == NULL && defaultTextBoxFilter(c)) 
+            || (screen->interactable_items[iidx]->filter != NULL && (*(screen->interactable_items[iidx]->filter))(c))) {
+          screen->interactable_items[iidx]->usrInput[screen->interactable_items[iidx]->current_input_length++] = c;
+          updateTextbox(screen->interactable_items[iidx], 1, 2);
+        }
       }
     }
     refresh();
