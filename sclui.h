@@ -235,10 +235,10 @@ void setItemY(sclui_item *item, int y) {item->y = y;}
 void centerInteractableItemX(sclui_screen *screen, sclui_interactable_item *item) {
   switch(item->t) {
     case TEXTBOX:
-      setInteractableItemX(item,(screen->width/2) - ((item->text_length + item->max_text_length) / 2));
+      setInteractableItemX(item,(screen->width/2) - ((item->text_length + item->max_text_length) / 2)-2);
       break;
     default:
-      setInteractableItemX(item,(screen->width / 2) - (item->text_length / 2));
+      setInteractableItemX(item,(screen->width / 2) - (item->text_length / 2)-2);
       break;
   }
 }
