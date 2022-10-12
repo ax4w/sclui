@@ -186,3 +186,5 @@ addInteractableItem(screen, checkbox1);
 */
 addItem(screen, example_text);
 ```
+
+# For an complete example with multiple screens, look at ```test.c```
