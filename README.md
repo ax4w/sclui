@@ -8,6 +8,7 @@ SCLUI should only be used in terminals, that support colors.
 Since SCLUI is based on ```curses.h``` you'll start of the same way as any other program, that uses ```curses.h```
 
 Example on an very simple application:
+
 (This code will probably not work, for an working example take a look at ```test.c```)
 
 ```C
