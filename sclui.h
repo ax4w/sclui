@@ -126,8 +126,6 @@ void centerItemY(sclui_screen *screen, sclui_item *item);
 int getItemX(sclui_item *item);
 int getItemY(sclui_item *item);
 
-
-
 #endif
 
 #define SCLUI_C
@@ -272,7 +270,8 @@ void updateButton(sclui_interactable_item *button, int atr, int n) {
     attron(COLOR_PAIR(n));
   }
   move(gConfig.posY + button->y,gConfig.posY + button->x);
-  addstr(button->text);
+  printw("| %s |",button->text);
+  //addstr(button->text);
   move(gConfig.posY + button->y,gConfig.posY + button->x);
   attroff(COLOR_PAIR(n));
 }
@@ -287,12 +286,16 @@ void updateTextbox(sclui_interactable_item *textbox, int atr, int n) {
   }
   move(gConfig.posY + textbox->y,
       gConfig.posY + textbox->x);
-  printw("%s:",textbox->text);
+  printw("| %s: ",textbox->text);
   attroff(COLOR_PAIR(n));
-  move(gConfig.posY + textbox->y, gConfig.posX + textbox->x + textbox->text_length + 2);
-  printw("%s",textbox->usrInput);
+  move(gConfig.posY + textbox->y, gConfig.posX + textbox->x + textbox->text_length + 4);
+  printw("%s ",textbox->usrInput);
+  move(gConfig.posY + textbox->y , gConfig.posX  + textbox -> x + textbox->text_length+ 5 + textbox->max_text_length);
+  if(atr != 0) attron(COLOR_PAIR(n));
+  addstr("|");
+  attroff(COLOR_PAIR(n));
   move(gConfig.posY + textbox->y,
-      gConfig.posX + textbox->x + textbox->text_length + 1 + textbox->current_input_length + 1);
+      gConfig.posX + textbox->x + textbox->text_length + 1 + textbox->current_input_length + 3);
 }
 
 int updateInteractable(sclui_screen *screen, int iidx, int mov) {

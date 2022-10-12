@@ -7,6 +7,7 @@
 void mainScreen();
 
 sclui_interactable_item *name = NULL;
+sclui_interactable_item *says = NULL;
 
 void quit() {
   curs_set(1);
@@ -16,7 +17,7 @@ void quit() {
 
 void thrdScreen() { 
   char buff[100];
-  snprintf(buff, 100, "Hello, %s", getTextboxText(name));
+  snprintf(buff, 100, "%s says: %s", getTextboxText(name),getTextboxText(says));
   sclui_screen *s3 = initScreen("3. Screen", 1, 1, 40, 20, KEY_UP, KEY_DOWN);
   sclui_item *i = createItem(buff, 10, 5);
   sclui_interactable_item *i1 = createButton("Quit", quit, 10, 6);
@@ -32,14 +33,17 @@ void thrdScreen() {
 
 void sndScreen() {
 
-  sclui_screen *s2 = initScreen("Hello World", 3, 1, 40 , 20, KEY_UP, KEY_DOWN);
+  sclui_screen *s2 = initScreen("Hello World", 4, 1, 40 , 20, KEY_UP, KEY_DOWN);
   name = createTextBox("Name", 15, 5, 20);
-  sclui_interactable_item *i3 = createButton("Next", &thrdScreen, 15, 7);
-  sclui_interactable_item *i4 = createButton("Quit", &quit, 15, 8);
+  says = createTextBox("Says", 15, 6, 20);
+  sclui_interactable_item *i3 = createButton("Next", &thrdScreen, 15, 8);
+  sclui_interactable_item *i4 = createButton("Quit", &quit, 15, 9);
   centerInteractableItemX(s2, name);
+  centerInteractableItemX(s2, says);
   centerInteractableItemX(s2,i3);
   centerInteractableItemX(s2,i4);
   addInteractableItem(s2, name); 
+  addInteractableItem(s2, says);
   addInteractableItem(s2, i3);
   addInteractableItem(s2, i4);
   runScreen(s2);
@@ -59,7 +63,7 @@ void mainScreen() {
 
 int main() {
   WINDOW *w = initscr();
- if(w == NULL) exit(-1);
+  if(w == NULL) exit(-1);
   setup();
   setConfig(0, 0);
   init_pair(2, COLOR_BLACK,COLOR_RED); //2 is always for buttons
