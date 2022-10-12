@@ -60,7 +60,7 @@ void mainScreen() {
   sclui_item *example_text = createItem("This is a small demonstration application!", 1, 1);
   sclui_interactable_item *button1 = createButton("Next", &sndScreen, 5, 10);
   sclui_interactable_item *button2 = createButton("Quit", &doQuit, 30, 10);
-  sclui_interactable_item *checkbox1 = createCheckBox("Check",0,5,5);
+  sclui_interactable_item *checkbox1 = createCheckBox("Check",1,5,5);
   centerItemX(s1, example_text);
   centerInteractableItemX(s1,checkbox1);
   addItem(s1,example_text);

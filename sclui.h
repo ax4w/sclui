@@ -248,6 +248,7 @@ char *getItemText(sclui_item *item) {
 sclui_interactable_item *createCheckBox(char *text, int defaultValue, int x, int y) {
   sclui_interactable_item *s = (sclui_interactable_item*)calloc(1,sizeof(sclui_interactable_item));
   s->text = text;
+  s->checkbox_checkBoxVal = defaultValue;
   s->text_length = getTextLength(text);
   s->x = x;
   s->y = y;
