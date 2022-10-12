@@ -4,9 +4,7 @@ SCLUI extends ```curses.h``` with prebuild components to create simple but good 
 
 SCLUI should only be used in terminals, that support colors.
 
----
-## This extension is in an very early stage and might contain many bugs!
----
+# For an complete example with multiple screens, look at ```test.c```
 
 ## Docs
 
@@ -187,4 +185,4 @@ addInteractableItem(screen, checkbox1);
 addItem(screen, example_text);
 ```
 
-# For an complete example with multiple screens, look at ```test.c```
+
