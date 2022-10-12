@@ -4,7 +4,7 @@ SCLUI extends ```curses.h``` with prebuild components to create simple but good 
 
 SCLUI should only be used in terminals, that support colors.
 
-**For an complete example with multiple screens, look at ```test.c```**
+**For an complete example with multiple screens, look at ![test.c](https://github.com/0x3alex/sclui/blob/main/test.c)**
 
 ## Docs
 
