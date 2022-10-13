@@ -6,6 +6,10 @@ SCLUI should only be used in terminals, that support colors.
 
 **For an complete example with multiple screens, look at ![test.c](https://github.com/0x3alex/sclui/blob/main/test.c)**
 
+![Screenshot](https://i.imgur.com/pdDIMeX.png) 
+
+![Screenshot](https://i.imgur.com/ETjwqqs.png)
+
 ## Docs
 
 ### Setup
