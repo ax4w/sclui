@@ -4,11 +4,9 @@ SCLUI extends ```curses.h``` with prebuild components to create simple but good 
 
 SCLUI should only be used in terminals, that support colors.
 
-**For an complete example with multiple screens, look at ![test.c](https://github.com/0x3alex/sclui/blob/main/test.c)**
+**For an complete example with multiple screens, look at ![demo.c](https://github.com/0x3alex/sclui/blob/main/demo.c)**
 
-![Screenshot](https://i.imgur.com/pdDIMeX.png) 
-
-![Screenshot](https://i.imgur.com/ETjwqqs.png)
+![Screenshot](https://i.imgur.com/usyhRe6.png) 
 
 ## Docs
 
@@ -61,6 +59,8 @@ sclui_screen *screen = initScreen("title",3,1,45,45,KEY_LEFT,KEY_RIGHT,sColor);
 ```C
 /*
   Create the colors
+  *.b - background
+  *.f - foreground
 */
 
 //normal color
@@ -160,9 +160,34 @@ sclui_interactable_item *checkbox1 = createCheckBox("Check",1,5,5,cColor,cfColor
 sclui_item *example_text = createItem("This is a small demonstration application!", 1, 1);
 ```
 
+
+## Adding to the Screen
+
+The order, when adding the items, is the same order, when selecting through the items on the screen!
+
+### Interactable Items
+```C
+/*
+  *@Params
+  *1. The screen to add to
+  *2. The interactable item that shall be added
+*/
+addInteractableItem(screen, checkbox1);
+```
+
+### Items
+```C
+/*
+  *@Params
+  *1. The screen to add to
+  *2. The item that shall be added
+*/
+addItem(screen, example_text);
+```
+
 ### Positioning
 
-Positioning must be done before calling ```runScreen(screen);```
+Positioning must be done before calling ```runScreen(screen);``` and after adding the item to the screen
 
 #### Interactable Items
 
@@ -229,29 +254,7 @@ int getItemX(example_text);
 int getItemY(example_text);
 
 ```
+### TIPS
 
-## Adding to the Screen
-
-The order, when adding the items, is the same order, when selecting through the items on the screen!
-
-### Interactable Items
-```C
-/*
-  *@Params
-  *1. The screen to add to
-  *2. The interactable item that shall be added
-*/
-addInteractableItem(screen, checkbox1);
-```
-
-### Items
-```C
-/*
-  *@Params
-  *1. The screen to add to
-  *2. The item that shall be added
-*/
-addItem(screen, example_text);
-```
-
+#### If you want to pass values from screen to screen, create the needed elements in an global context
 
