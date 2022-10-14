@@ -163,7 +163,7 @@ sclui_item *example_text = createItem("This is a small demonstration application
 
 ## Adding to the Screen
 
-The order, when adding the items, is the same order, when selecting through the items on the screen!
+The order, in which the items are added, is the same order, when selecting through the items on the screen!
 
 ### Interactable Items
 ```C
