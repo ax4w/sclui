@@ -40,7 +40,7 @@ void mainScreen() {
   sclui_interactable_item *button1 = createButton("Quit1", &doQuit, 30, 11,&buttonColor,&buttonColorFocus);
   sclui_interactable_item *button2 = createButton("Quit2", &doQuit, 30, 13,&buttonColor,&buttonColorFocus);
 
-  sclui_interactable_item *name = createTextBox("Name", NULL, 8, 5,8,&buttonColor,&buttonColorFocus);
+  sclui_interactable_item *name = createTextBox("Name", NULL, 8, 5,8,NULL,&buttonColorFocus);
 
   sclui_interactable_item *checkbox1 = createCheckBox("Check",1,5,9,&checkboxColor,&checkboxFocusColor);
   addInteractableItem(s1,name);
