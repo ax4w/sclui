@@ -27,6 +27,11 @@ typedef struct {
 typedef enum {BUTTON,TEXTBOX, CHECKBOX} type;
 
 typedef struct {
+  int b;
+  int f;
+} color;
+
+typedef struct {
   /*
      * General
   */
@@ -35,6 +40,12 @@ typedef struct {
   int x;
   int y;
   type t;
+
+
+  color *color;
+  color *fcolor;
+  int cp;
+  int cpf;
 
   /*
      *Button
@@ -75,6 +86,8 @@ typedef struct {
 
   int width;
   int height;
+
+  color *color;
   
   /*
     *Interactable Items
@@ -98,23 +111,34 @@ typedef struct {
 void runScreen(sclui_screen *screen);
 void setConfig(int x, int y);
 sclui_screen *initScreen(char *title, int interactableItemsCount,int itemsCount, 
-    int width, int height, int navKey1, int navKey2); 
+    int width, int height, int navKey1, int navKey2,color *color); 
 void setup();
 
 /*
 ===================Interactables=========================   
 */
 
+#define createButton(text,action,x,y,color,focus_color) \
+  createInteractableItem(text,action,NULL,BUTTON,x,y,0,0,color,focus_color,3,4);
+
+#define createTextBox(text,filter,x,y,max_length,color,focus_color) \
+  createInteractableItem(text,NULL,filter,TEXTBOX,x,y,max_length,0,color,focus_color,5,6);
+
+#define createCheckBox(text,defaultValue,x,y,color,focus_color) \
+  createInteractableItem(text,NULL,NULL,CHECKBOX,x,y,0,defaultValue,color,focus_color,7,8)
+
+
+
 //Button
-sclui_interactable_item *createButton(char *text, void(*action)(),int x, int y);
+//sclui_interactable_item *createButton(char *text, void(*action)(),int x, int y);
 
 //Textbox
-sclui_interactable_item *createTextBox(char *text, bool(*filter)(char), int x, int y, int max_text_length);
+//sclui_interactable_item *createTextBox(char *text, bool(*filter)(char), int x, int y, int max_text_length);
 char *getTextboxText(sclui_interactable_item *textbox);
 int getTextboxTextLength(sclui_interactable_item *textbox);
 
 //Checkbox
-sclui_interactable_item *createCheckBox(char *text, int defaultValue , int x, int y);
+//sclui_interactable_item *createCheckBox(char *text, int defaultValue , int x, int y);
 int getCheckBoxValue(sclui_interactable_item *checkbox);
 int getCheckBoxDefaultValue(sclui_interactable_item *checkbox);
 
@@ -182,7 +206,8 @@ int getTextLength(char *s) {
 /*
   *Screen
 */
-sclui_screen *initScreen(char *title, int interactableItemsCount, int itemsCount, int width, int height, int upKey, int downKey) {
+sclui_screen *initScreen(char *title, int interactableItemsCount, int itemsCount, int width, int height, int upKey, int downKey, color *color) {
+  assert(color != NULL);
   sclui_screen *s = (sclui_screen*)calloc(1,sizeof(sclui_screen));
   s->interactable_items = (sclui_interactable_item**)calloc(interactableItemsCount,sizeof(sclui_interactable_item*));
   s->interactable_items_length = interactableItemsCount;
@@ -196,6 +221,7 @@ sclui_screen *initScreen(char *title, int interactableItemsCount, int itemsCount
   s->title_length = getTextLength(title);
   s->interactable_items_current_length = 0;
   s->items_current_length = 0;
+  s->color = color;
   return s;
 }
 
@@ -242,17 +268,30 @@ char *getItemText(sclui_item *item) {
 /*
   *Interactable Items
 */
-/*
-  *Checkbox
-*/
-sclui_interactable_item *createCheckBox(char *text, int defaultValue, int x, int y) {
+
+sclui_interactable_item *createInteractableItem(
+    char *text,void(*action)(),bool(*filter)(char),type t,
+    int x, int y, int max_text_length, int defaultValue, color *c, color *fc, int cp, int cpf
+  ) {
   sclui_interactable_item *s = (sclui_interactable_item*)calloc(1,sizeof(sclui_interactable_item));
   s->text = text;
-  s->checkbox_checkBoxVal = defaultValue;
-  s->text_length = getTextLength(text);
+  s->button_action = action;
+  s->textbox_filter = filter;
+  s->t = t;
   s->x = x;
   s->y = y;
-  s->t = CHECKBOX;
+  s->textbox_max_text_length = max_text_length;
+  s->checkbox_defaultVal = defaultValue;
+  if(t == TEXTBOX) {
+    s->textbox_usrInput = calloc(max_text_length,sizeof(char));
+  }
+  s->text_length = getTextLength(text);
+  s->textbox_current_input_length = 0;
+  s->color = c;
+  s->fcolor = fc;
+  s->cp = cp;
+  s->cpf = cpf;
+  return s;
 }
 
 int getCheckBoxValue(sclui_interactable_item *checkbox) {
@@ -269,19 +308,6 @@ int flipCheckBoxValue(sclui_interactable_item *checkbox) {
 /*
    *Textbox
 */
-sclui_interactable_item *createTextBox(char *text, bool(*filter)(char), int x, int y, int max_text_length) {
-  sclui_interactable_item *s = (sclui_interactable_item*)calloc(1,sizeof(sclui_interactable_item));
-  s->text = text;
-  s->t = TEXTBOX;
-  s->y = y;
-  s->x = x;
-  s->textbox_filter = filter;
-  s->text_length = getTextLength(text);
-  s->textbox_current_input_length = 0;
-  s->textbox_max_text_length = max_text_length;
-  s->textbox_usrInput = (char*)calloc(max_text_length,sizeof(char));
-  return s;
-}
 
 char *getTextboxText(sclui_interactable_item *textbox) {
   return textbox->textbox_usrInput;
@@ -306,18 +332,6 @@ char *getTextboxUserInput(sclui_interactable_item *textbox) {
 /*
    * Button
 */
-sclui_interactable_item *createButton(char *text, void(*action)(), int x, int y) {
-  assert(action != NULL); 
-  sclui_interactable_item *s = (sclui_interactable_item*)calloc(1,sizeof(sclui_interactable_item));
-  s->text = text;
-  s->x = x;
-  s->text_length = getTextLength(text);
-  s->y = y;
-  s->t = BUTTON;
-  s->button_action = action;
-  return s;
-}
-
 
 /*
   *Helper function general for interactable items and items
@@ -371,12 +385,38 @@ void addInteractableItem(sclui_screen *screen, sclui_interactable_item *item) {
   *Update functions
 */
 
-void updateCheckbox(sclui_interactable_item *checkbox, int atr, int n) {
-  if(atr == 0) { //off
-    attroff(COLOR_PAIR(n));
-  }else{
-    attron(COLOR_PAIR(n));
+void setColor(sclui_interactable_item *i, int n) {
+  switch (n) {
+    case 1:
+      if(i->color != NULL) {
+        init_pair(
+          i->cp,
+          i->color->f,
+          i->color->b
+        );
+        attron(COLOR_PAIR(i->cp));
+      }else{
+        attroff(COLOR_PAIR(i->cp));
+      }
+      break;
+    case 2:
+      if(i->fcolor != NULL) {
+          init_pair(
+            i->cpf,
+            i->fcolor->f,
+            i->fcolor->b
+          );
+          attron(COLOR_PAIR(i->cpf));
+      }else{
+          attroff(COLOR_PAIR(i->cpf));
+      }
+      break;
   }
+}
+
+void updateCheckbox(sclui_interactable_item *checkbox, int n) {
+  //n = 1 focus, n = 0 unfocus
+  setColor(checkbox,n);
   move(
       gConfig.posY + getInteractableItemY(checkbox),
       gConfig.posY + getInteractableItemX(checkbox)
@@ -386,15 +426,11 @@ void updateCheckbox(sclui_interactable_item *checkbox, int atr, int n) {
       gConfig.posY + getInteractableItemY(checkbox),
       gConfig.posY + getInteractableItemX(checkbox)
   );
-  attroff(COLOR_PAIR(n));
+  
 }
 
-void updateButton(sclui_interactable_item *button, int atr, int n) {
-  if(atr == 0) { //off
-    attroff(COLOR_PAIR(n));
-  }else{
-    attron(COLOR_PAIR(n));
-  }
+void updateButton(sclui_interactable_item *button, int n) {
+  setColor(button,n);
   move(
       gConfig.posY + getInteractableItemY(button),
       gConfig.posY + getInteractableItemX(button)
@@ -404,22 +440,16 @@ void updateButton(sclui_interactable_item *button, int atr, int n) {
       gConfig.posY + getInteractableItemY(button),
       gConfig.posY + getInteractableItemX(button)
   );
-  attroff(COLOR_PAIR(n));
 }
 
 
-void updateTextbox(sclui_interactable_item *textbox, int atr, int n) {
-   if(atr == 0) { //off
-    attroff(COLOR_PAIR(n));
-  }else{
-    attron(COLOR_PAIR(n));
-  }
+void updateTextbox(sclui_interactable_item *textbox, int n) {
+  setColor(textbox,n);
   move(
       gConfig.posY + getInteractableItemY(textbox),
       gConfig.posY + getInteractableItemX(textbox)
   );
   printw("| %s: ",textbox->text);
-  attroff(COLOR_PAIR(n));
   move(
       gConfig.posY + getInteractableItemY(textbox), 
       gConfig.posX + getInteractableItemX(textbox) + textbox->text_length + 4
@@ -430,9 +460,7 @@ void updateTextbox(sclui_interactable_item *textbox, int atr, int n) {
       gConfig.posX  + getInteractableItemX(textbox) + textbox->text_length+ 5 
         + getTextboxMaxTextLength(textbox)
   );
-  if(atr != 0) attron(COLOR_PAIR(n));
   addstr("|");
-  attroff(COLOR_PAIR(n));
   move(
       gConfig.posY + getInteractableItemY(textbox),
       gConfig.posX + getInteractableItemX(textbox) + textbox->text_length + 1 
@@ -444,27 +472,27 @@ int updateInteractable(sclui_screen *screen, int iidx, int mov) {
   if((mov == 0 && iidx < getCurrentInteractableItemsLength(screen)-1) || (mov == 1 && iidx > 0)) {
     switch(getInteractableItem(screen,iidx)->t) {
       case TEXTBOX:
-        updateTextbox(getInteractableItem(screen,iidx),0,2);
+        updateTextbox(getInteractableItem(screen,iidx),1);
         break;
       case CHECKBOX:
-        updateCheckbox(getInteractableItem(screen,iidx),0,2);
+        updateCheckbox(getInteractableItem(screen,iidx),1);
         break;
       default:
-        updateButton(getInteractableItem(screen,iidx), 0, 2);
+        updateButton(getInteractableItem(screen,iidx), 1);
     }
     iidx = mov == 0 ? iidx+1 : iidx-1;
     switch(getInteractableItem(screen,iidx)->t) {
       case TEXTBOX:
         curs_set(1);
-        updateTextbox(getInteractableItem(screen,iidx), 1, 2);
+        updateTextbox(getInteractableItem(screen,iidx), 2);
         break;
       case CHECKBOX:
         curs_set(0);
-        updateCheckbox(getInteractableItem(screen,iidx),1,2);
+        updateCheckbox(getInteractableItem(screen,iidx),2);
         break;
       default:
         curs_set(0);
-        updateButton(getInteractableItem(screen,iidx),1,2);
+        updateButton(getInteractableItem(screen,iidx),2);
     }
     refresh();
   } 
@@ -476,11 +504,13 @@ bool defaultTextBoxFilter(char c) {
 }
 
 void printFrame(sclui_screen *screen) {
-  //clear old screen
+  
   clear();
   
   //set color to border color
+  init_pair(1,screen->color->f,screen->color->b);
   attron(COLOR_PAIR(1));
+  
   move(
       gConfig.posY,
       gConfig.posX
@@ -555,13 +585,13 @@ void runScreen(sclui_screen *screen) {
     for(int i = 0; i < getCurrentInteractableItemsLength(screen); i++) {
       switch(getInteractableItem(screen,i)->t) {
         case TEXTBOX:
-          updateTextbox(getInteractableItem(screen,i), 0, 2);
+          updateTextbox(getInteractableItem(screen,i), 1);
           break;
         case CHECKBOX:
-          updateCheckbox(getInteractableItem(screen,iidx),0,2);
+          updateCheckbox(getInteractableItem(screen,i),1);
           break;
         default:
-          updateButton(getInteractableItem(screen,i),0,2);
+          updateButton(getInteractableItem(screen,i),1);
           break;
       } 
     }
@@ -570,15 +600,15 @@ void runScreen(sclui_screen *screen) {
     switch(getInteractableItem(screen,iidx)->t) {
       case TEXTBOX:
         curs_set(1);
-        updateTextbox(getInteractableItem(screen,iidx), 1, 2);
+        updateTextbox(getInteractableItem(screen,iidx), 2);
         break;
       case CHECKBOX:
         curs_set(0);
-        updateCheckbox(getInteractableItem(screen,iidx),1,2);
+        updateCheckbox(getInteractableItem(screen,iidx),2);
         break;
       default:
         curs_set(0);
-        updateButton(getInteractableItem(screen,iidx),1,2);
+        updateButton(getInteractableItem(screen,iidx),2);
     }
   }
   refresh();
@@ -593,7 +623,7 @@ void runScreen(sclui_screen *screen) {
           break;
         case CHECKBOX:
           getInteractableItem(screen,iidx)->checkbox_checkBoxVal = flipCheckBoxValue(getInteractableItem(screen,iidx));
-          updateCheckbox(getInteractableItem(screen,iidx),1,2);
+          updateCheckbox(getInteractableItem(screen,iidx),2);
           break;
         default:
           (*getInteractableItem(screen,iidx)->button_action)();
@@ -617,7 +647,7 @@ void runScreen(sclui_screen *screen) {
           if(getTextboxCurrentLength(getInteractableItem(screen,iidx))  < 0) 
             getInteractableItem(screen,iidx)->textbox_current_input_length = 0;
           
-          updateTextbox(getInteractableItem(screen,iidx), 1, 2);
+          updateTextbox(getInteractableItem(screen,iidx), 2);
 
         }
       }
@@ -627,7 +657,7 @@ void runScreen(sclui_screen *screen) {
             || (getInteractableItem(screen,iidx)->textbox_filter != NULL 
             && (*(getInteractableItem(screen,iidx)->textbox_filter))(c))) {
           getTextboxUserInput(getInteractableItem(screen,iidx))[getInteractableItem(screen,iidx)->textbox_current_input_length++] = c;
-          updateTextbox(getInteractableItem(screen,iidx), 1, 2);
+          updateTextbox(getInteractableItem(screen,iidx), 2);
         }
       }
     }

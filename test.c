@@ -21,49 +21,44 @@ bool isOne(char c) {
   return c == '1';
 }
 
-void thrdScreen() { 
-  char buff[100];
-  snprintf(buff, 100, "%s says: %s", getTextboxText(name),getTextboxText(says));
-  sclui_screen *s3 = initScreen("3. Screen", 1, 1, 40, 20, KEY_UP, KEY_DOWN);
-  sclui_item *text = createItem(buff, 10, 5);
-  sclui_interactable_item *quit = createButton("Quit", &doQuit, 10, 6);
-  centerItemX(s3,text);
-  centerItemY(s3,text); 
-  centerInteractableItemX(s3, quit);
-  centerInteractableItemY(s3, quit);
-  setInteractableItemY(quit, getInteractableItemY(quit)+1);
-  addInteractableItem(s3, quit);
-  addItem(s3, text);
-  runScreen(s3);
-}
-
-void sndScreen() {
-
-  sclui_screen *s2 = initScreen("Hello World", 4, 1, 40 , 20, KEY_UP, KEY_DOWN);
-  name = createTextBox("Name", NULL, 15, 5, 20);
-  says = createTextBox("Says",&isOne, 15, 6, 20);
-  sclui_interactable_item *next = createButton("Next", &thrdScreen, 15, 8);
-  sclui_interactable_item *quit = createButton("Quit", &doQuit, 15, 9);
-  centerInteractableItemX(s2, name);
-  centerInteractableItemX(s2, says);
-  centerInteractableItemX(s2,next);
-  centerInteractableItemX(s2,quit);
-  addInteractableItem(s2, name); 
-  addInteractableItem(s2, says);
-  addInteractableItem(s2, next);
-  addInteractableItem(s2, quit);
-  runScreen(s2);
-}
 
 void mainScreen() {
-  sclui_screen *s1 = initScreen("Example", 3,1, 45, 15, KEY_LEFT,KEY_RIGHT);
+  color bt2c = {
+    .b = COLOR_BLUE,
+    .f = COLOR_YELLOW
+  };
+
+  color bt2fc = {
+    .b = COLOR_RED,
+    .f = COLOR_YELLOW
+  };
+
+   color cb2c = {
+    .b = COLOR_MAGENTA,
+    .f = COLOR_WHITE
+  };
+
+  color cb2fc = {
+    .b = COLOR_CYAN,
+    .f = COLOR_GREEN
+  };
+  color sc = {
+    .b = COLOR_WHITE,
+    .f = COLOR_BLACK
+  };
+  sclui_screen *s1 = initScreen("Example", 4,1, 45, 15, KEY_LEFT,KEY_RIGHT, &sc);
   sclui_item *example_text = createItem("This is a small demonstration application!", 1, 1);
-  sclui_interactable_item *button1 = createButton("Next", &sndScreen, 5, 10);
-  sclui_interactable_item *button2 = createButton("Quit", &doQuit, 30, 10);
-  sclui_interactable_item *checkbox1 = createCheckBox("Check",1,5,5);
+  
+  sclui_interactable_item *button1 = createButton("Quit", &doQuit, 20, 10,&bt2c,&bt2fc);
+  sclui_interactable_item *button2 = createButton("Quit1", &doQuit, 30, 10,&bt2c,&bt2fc);
+
+  name = createTextBox("Name", NULL, 8, 8,20,&bt2c,&bt2fc);
+
+  sclui_interactable_item *checkbox1 = createCheckBox("Check",1,5,5,&cb2c,&cb2fc);
   centerItemX(s1, example_text);
   centerInteractableItemX(s1,checkbox1);
   addItem(s1,example_text);
+  addInteractableItem(s1,name);
   addInteractableItem(s1,checkbox1);
   addInteractableItem(s1, button1);
   addInteractableItem(s1, button2);
@@ -75,7 +70,5 @@ int main() {
   if(w == NULL) exit(-1);
   setup();
   setConfig(0, 0);
-  init_pair(2, COLOR_BLACK,COLOR_RED); //2 is always for buttons
-  init_pair(1, COLOR_BLACK,COLOR_WHITE); //1 is for the window border
   mainScreen();  
 }

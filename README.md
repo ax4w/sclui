@@ -27,10 +27,20 @@ setup();
 //(optional) setX and Y of window
 setConfig(0,0);
 ```
+**Hint: If you want no colors for a sertain object, set the wanted color field to NULL**
 
 ### Create Window
 
 ```C
+/*
+  Create Color
+  This will be the border color of the screen
+*/
+
+color sColor = {
+  .b = COLOR_WHITE,
+  .f = COLOR_BLACK
+};
 /*
   *@Params
   *1. The title
@@ -39,26 +49,61 @@ setConfig(0,0);
   *4. The width
   *5. The height
   *6./7. The control keys to switch between elements
+  *8. - Color
 */
-sclui_screen *screen = initScreen("title",3,1,45,45,KEY_LEFT,KEY_RIGHT);
+sclui_screen *screen = initScreen("title",3,1,45,45,KEY_LEFT,KEY_RIGHT,sColor);
 ``` 
 
 ### Create Interactable Items
+
 #### Button
 
 ```C
+/*
+  Create the colors
+*/
+
+//normal color
+color bColor = {
+  .b = COLOR_BLUE,
+  .f = COLOR_YELLOW
+};
+
+//focus color
+color bfColor = {
+  .b = COLOR_RED,
+  .f = COLOR_YELLOW
+};
 /*
    *@Params
    *1. The text on the button
    *2. The function that the button executes - needs to be type void(*f)();
    *3./4. The X and Y position
+   *5. Color
+   *6. Focus Color
 */
-sclui_interactable_item *button = createButton("Next", &sndScreen, 5, 10);
+sclui_interactable_item *button = createButton("Next", &sndScreen, 5, 10,bColor,bfColor);
 ```
 
 #### Textbox
 
 ```C
+
+/*
+  Create the colors
+*/
+
+//normal color
+color tColor = {
+  .b = COLOR_BLUE,
+  .f = COLOR_YELLOW
+};
+
+//focus color
+color tfColor = {
+  .b = COLOR_RED,
+  .f = COLOR_YELLOW
+};
 /*
    *@Params
    *1. The text for the textbox
@@ -67,13 +112,31 @@ sclui_interactable_item *button = createButton("Next", &sndScreen, 5, 10);
    *   - Custom functions need to be from type: bool(*f)(char);
    *3. Max input length
    *4./5. The X and Y position
+   *6. Color
+   *7. Focus Color
 */
-sclui_interactable_item *name = createTextBox("Name", NULL, 15, 5, 20);
+sclui_interactable_item *name = createTextBox("Name", NULL, 15, 5, 20,tColor,tfcolor);
 ```
 
 #### Checkbox
 
 ```C
+
+/*
+  Create the colors
+*/
+
+//normal color
+color cColor = {
+  .b = COLOR_BLUE,
+  .f = COLOR_YELLOW
+};
+
+//focus color
+color cfColor = {
+  .b = COLOR_RED,
+  .f = COLOR_YELLOW
+};
 /*
   *@Params
   *1. The text of the checkbox
@@ -81,8 +144,10 @@ sclui_interactable_item *name = createTextBox("Name", NULL, 15, 5, 20);
   *   - 0 = unchecked
   *   - 1 = checked
   *3./4. The X and Y position
+  *5. Color
+  *6. Focus Color
 */
-sclui_interactable_item *checkbox1 = createCheckBox("Check",1,5,5);
+sclui_interactable_item *checkbox1 = createCheckBox("Check",1,5,5,cColor,cfColor);
 ```
 
 ## Create Items
@@ -97,7 +162,7 @@ sclui_item *example_text = createItem("This is a small demonstration application
 
 ### Positioning
 
-Positioning must be done before calling ```runScreen(screen);``` !
+Positioning must be done before calling ```runScreen(screen);```
 
 #### Interactable Items
 
