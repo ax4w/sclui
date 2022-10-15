@@ -35,13 +35,12 @@ void mainScreen() {
   };
   sclui_screen *s1 = initScreen("Example", 4,1, 45, 15, KEY_LEFT,KEY_RIGHT, &screenColor);
   sclui_item *example_text = createItem("This is a small demonstration application!", 1, 1);
-  
   //doQuit is a default function from SCLUI
   sclui_interactable_item *button1 = createButton("Quit1", &doQuit, 30, 11,&buttonColor,&buttonColorFocus);
   sclui_interactable_item *button2 = createButton("Quit2", &doQuit, 30, 13,&buttonColor,&buttonColorFocus);
 
   sclui_interactable_item *name = createTextBox("Name", NULL, 8, 5,8,NULL,&buttonColorFocus);
-
+  getInteractableItemByText(s1,"Quit1");
   sclui_interactable_item *checkbox1 = createCheckBox("Check",1,5,9,&checkboxColor,&checkboxFocusColor);
   addInteractableItem(s1,name);
   addInteractableItem(s1,checkbox1);

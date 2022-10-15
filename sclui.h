@@ -128,6 +128,9 @@ void setConfig(int x, int y);
 sclui_screen *initScreen(char *title, int interactableItemsCount,int itemsCount, 
     int width, int height, int navKey1, int navKey2,color *color); 
 void setup();
+sclui_interactable_item *getInteractableItemByText(sclui_screen *screen, char *name);
+
+sclui_screen *currentScreen = NULL;
 
 /*
 ===================Interactables=========================   
@@ -178,9 +181,9 @@ void setItemY(sclui_item *item, int y);
 int getItemX(sclui_item *item);
 int getItemY(sclui_item *item);
 
-#endif
 
-#define SCLUI_C
+
+#endif
 #ifdef SCLUI_C
 
 /*
@@ -314,6 +317,15 @@ sclui_item *getItem(sclui_screen *screen, int i) {
   return screen->items[i];
 }
 
+sclui_interactable_item *getInteractableItemByText(sclui_screen *screen, char *text) {
+  for(int i = 0; i < getCurrentInteractableItemsLength(screen); i++) {
+    if(getInteractableItem(screen,i)->text == text) {
+      return getInteractableItem(screen,i);
+    }
+  }
+  return NULL;
+}
+
 /*
   * ITEM FUNCTIONS
 */
@@ -444,12 +456,12 @@ void updateTextbox(sclui_interactable_item *textbox, int n) {
 /*
   *GENERAL UPDATE
 */
-int updateInteractable(sclui_screen *screen, int iidx, int mov) {
-  if((mov == 0 && iidx < getCurrentInteractableItemsLength(screen)-1) || (mov == 1 && iidx > 0)) {
-    sclui_interactable_item *i = getInteractableItem(screen,iidx);
+int updateInteractable(int iidx, int mov) {
+  if((mov == 0 && iidx < getCurrentInteractableItemsLength(currentScreen)-1) || (mov == 1 && iidx > 0)) {
+    sclui_interactable_item *i = getInteractableItem(currentScreen,iidx);
     (*(i->update))(i,1);
     iidx = mov == 0 ? iidx+1 : iidx-1;
-    i = getInteractableItem(screen,iidx);
+    i = getInteractableItem(currentScreen,iidx);
     (*(i->update))(i,2);
     refresh();
   } 
@@ -461,11 +473,11 @@ int updateInteractable(sclui_screen *screen, int iidx, int mov) {
 /*
   *RENDER SCREEN
 */
-void printFrame(sclui_screen *screen) {
+void printFrame() {
   
   clear();
   //set color to border color
-  init_pair(1,screen->color->f,screen->color->b);
+  init_pair(1,currentScreen->color->f,currentScreen->color->b);
   attron(COLOR_PAIR(1));
   
   move(gConfig.posY, gConfig.posX);
@@ -476,60 +488,62 @@ void printFrame(sclui_screen *screen) {
   };
 
   //print title
-  addstr(screen->title);
+  addstr(currentScreen->title);
   
   //print the rest of the frame chars
-  for(int i = 0; i <= (screen->width - screen->title_length - 5); i++) {
+  for(int i = 0; i <= (currentScreen->width - currentScreen->title_length - 5); i++) {
     addstr(H_FRAME);
   }
-  move(gConfig.posY,gConfig.posX + screen->width);
+  move(gConfig.posY,gConfig.posX + currentScreen->width);
   
   //print right vertical frame
-  for(int i = 1; i <= screen->height+1; i++) {
+  for(int i = 1; i <= currentScreen->height+1; i++) {
     addstr(V_FRAME);
-    move(gConfig.posY + i,gConfig.posX + screen->width);
+    move(gConfig.posY + i,gConfig.posX + currentScreen->width);
   }
 
-  move(gConfig.posY + screen->height, gConfig.posX);
+  move(gConfig.posY + currentScreen->height, gConfig.posX);
   
   //print buttom
-  for(int i = 1; i <= screen->width; i++) addstr(H_FRAME);
+  for(int i = 1; i <= currentScreen->width; i++) addstr(H_FRAME);
   move(gConfig.posY, gConfig.posX);
   
   //print left vertical frame
-  for(int i = 1; i <= screen->height+1; i++) {
+  for(int i = 1; i <= currentScreen->height+1; i++) {
     addstr(V_FRAME);
     move(gConfig.posY+i, gConfig.posX);
   }
   attroff(COLOR_PAIR(1));
 }
 
-void showItems(sclui_screen *screen) {
-  if(getCurrentItemsLength(screen) > 0) {
-    for(int i = 0; i < getCurrentItemsLength(screen); i++) {
+void showItems() {
+  if(getCurrentItemsLength(currentScreen) > 0) {
+    for(int i = 0; i < getCurrentItemsLength(currentScreen); i++) {
       move(
-          gConfig.posY + getItem(screen,i)->y, 
-          gConfig.posX + getItem(screen,i)->x
+          gConfig.posY + getItem(currentScreen,i)->y, 
+          gConfig.posX + getItem(currentScreen,i)->x
       );
-      addstr(getItemText(getItem(screen,i)));
+      addstr(getItemText(getItem(currentScreen,i)));
     }
   }
 
-  if(getCurrentInteractableItemsLength(screen) > 0) {
-    for(int i = 0; i < getCurrentInteractableItemsLength(screen); i++) {
-      getInteractableItem(screen,i)->update(getInteractableItem(screen,i),1);
+  if(getCurrentInteractableItemsLength(currentScreen) > 0) {
+    for(int i = 0; i < getCurrentInteractableItemsLength(currentScreen); i++) {
+      getInteractableItem(currentScreen,i)->update(getInteractableItem(currentScreen,i),1);
     }
-    getInteractableItem(screen,0)->update(getInteractableItem(screen,0),2);
+    getInteractableItem(currentScreen,0)->update(getInteractableItem(currentScreen,0),2);
   }
 }
 
 void runScreen(sclui_screen *screen) {
+  currentScreen = screen;
+  
   int c, iidx = 0;
-  printFrame(screen);
-  showItems(screen);
+  printFrame();
+  showItems();
 
   refresh();
- 
+
   while(1) {
     c  = getch();
     sclui_interactable_item *current = getInteractableItem(screen,iidx);
@@ -573,9 +587,9 @@ void runScreen(sclui_screen *screen) {
     }
 
     if(c == screen->downKey) {
-      iidx = updateInteractable(screen, iidx, 0);
+      iidx = updateInteractable(iidx, 0);
     }else if(c == screen->upKey) {
-      iidx = updateInteractable(screen,iidx,1);
+      iidx = updateInteractable(iidx,1);
     }
     refresh();
   }
@@ -599,7 +613,6 @@ void addInteractableItem(sclui_screen *screen, sclui_interactable_item *item) {
 /*
   *CREATE FUNCTIONS
 */
-
 
 sclui_interactable_item *createInteractableItem(
     char *text,void(*action)(),bool(*filter)(char),type t,
@@ -664,6 +677,5 @@ sclui_item *createItem(char *text, int x, int y) {
   s->x = x;
   return s;
 }
-
 
 #endif

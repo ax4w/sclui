@@ -258,3 +258,7 @@ int getItemY(example_text);
 
 #### If you want to pass values from screen to screen, create the needed elements in an global context
 
+#### To access the items from a screen before running a new screen, use ```currentScreen``` as instance to get an item
+
+#### To get an interactable item, use ```getInteractableItemByText```
+
