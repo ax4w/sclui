@@ -241,10 +241,6 @@ int getTextLength(char *s) {
   *INTERACTABLE ITEMS FUNCTIONS
 */
 
-void updateColor(sclui_interactable_item *item, color *c) {
-  item->color = c;
-}
-
 int getTextboxTextLength(struct sclui_interactable_item_struct *textbox) {
   return textbox->textbox_current_input_length;
 }
@@ -394,11 +390,11 @@ void centerItem(sclui_item *i, axsis a) {
 void setColor(sclui_interactable_item *i, int n) {
   switch (n) {
     case 1:
-      if(i->color != NULL) {
+      if(i->bcolor != NULL) {
         init_pair(
           i->cp,
-          i->color->f,
-          i->color->b
+          i->bcolor->f,
+          i->bcolor->b
         );
         attron(COLOR_PAIR(i->cp));
       }else{
@@ -694,7 +690,7 @@ sclui_interactable_item *createInteractableItem(
   }
   s->center = &centerInteractableItem;
   s->text_length = getTextLength(text);
-  s->color = c;
+  s->bcolor = c;
   s->fcolor = fc;
   s->cp = cp;
   s->cpf = cpf;
