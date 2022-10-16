@@ -668,6 +668,7 @@ sclui_interactable_item *createInteractableItem(
     int x, int y, int max_text_length, int defaultValue, color *c, color *fc, int cp, int cpf
   ) {
   sclui_interactable_item *s = (sclui_interactable_item*)calloc(1,sizeof(sclui_interactable_item));
+  assert(s != NULL);
   s->text = text;
   s->t = t;
   s->x = x;
@@ -677,6 +678,7 @@ sclui_interactable_item *createInteractableItem(
     case TEXTBOX:
       s->textbox_max_text_length = max_text_length;
       s->textbox_usrInput = calloc(max_text_length,sizeof(char));
+      assert(s->textbox_usrInput != NULL);
       s->textbox_filter = filter == NULL ? &defaultTextBoxFilter : filter;
       s->textbox_current_input_length = 0;
       s->update = &updateTextbox;
@@ -702,9 +704,12 @@ sclui_interactable_item *createInteractableItem(
 sclui_screen *initScreen(char *title, int interactableItemsCount, int itemsCount, int width, int height, int upKey, int downKey, color *color) {
   assert(color != NULL);
   sclui_screen *s = (sclui_screen*)calloc(1,sizeof(sclui_screen));
+  assert(s != NULL);
   s->interactable_items = (sclui_interactable_item**)calloc(interactableItemsCount,sizeof(sclui_interactable_item*));
+  assert(s->interactable_items != NULL);
   s->interactable_items_length = interactableItemsCount;
   s->items = (sclui_item**)calloc(itemsCount,sizeof(sclui_item*));
+  assert(s->items != NULL);
   s->items_length = itemsCount;
   s->width = width;
   s->height = height;
@@ -720,6 +725,7 @@ sclui_screen *initScreen(char *title, int interactableItemsCount, int itemsCount
 
 sclui_item *createItem(char *text, int x, int y) {
   sclui_item *s = (sclui_item*)calloc(1,sizeof(sclui_item));
+  assert(s != NULL);
   s->text = text;
   s->text_length = getTextLength(text);
   s->y = y;
