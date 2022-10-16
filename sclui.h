@@ -574,18 +574,20 @@ void showItems() {
     getInteractableItem(currentScreen,0)->update(getInteractableItem(currentScreen,0),2);
   }
 }
+int iidx = 0;
 
 void updateCurrentScreen() {
   printFrame();
   showItems();
   refresh();
-  current = getInteractableItem(currentScreen,0);
+  iidx = 0;
+  current = getInteractableItem(currentScreen,iidx);
 }
 
 void runScreen(sclui_screen *screen) {
   currentScreen = screen;
   
-  int c, iidx = 0;
+  int c;
   updateCurrentScreen();
 
   while(1) {
