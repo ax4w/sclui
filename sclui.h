@@ -214,7 +214,6 @@ void setup() {
   noecho();
   start_color();
   keypad(stdscr,TRUE);
-  
 }
 
 /*
@@ -390,7 +389,6 @@ void centerItem(sclui_item *i, axsis a) {
   *UPDATE INTERACTABLE - MISC
 */
 void setColor(sclui_interactable_item *i, int n) {
-  attroff(COLOR_PAIR(99));
   switch (n) {
     case 1:
       if(i->bcolor != NULL) {
@@ -415,10 +413,6 @@ void setColor(sclui_interactable_item *i, int n) {
       }else{
           attroff(COLOR_PAIR(i->cpf));
       }
-      break;
-    case 99:
-      init_pair(99,COLOR_BLACK,COLOR_WHITE);
-      attron(COLOR_PAIR(99));
       break;
   }
 }
@@ -460,6 +454,9 @@ void updateButton(sclui_interactable_item *button, int n) {
 void updateTextbox(sclui_interactable_item *textbox, int n) {
   curs_set(1);
   setColor(textbox,n);
+  if(!textbox->enabled) {
+    
+  }
   move(
       gConfig.posY + getInteractableItemY(textbox),
       gConfig.posY + getInteractableItemX(textbox)
@@ -495,9 +492,14 @@ int updateInteractable(int iidx, int mov) {
     sclui_interactable_item *i = getInteractableItem(currentScreen,iidx);
     (*(i->update))(i,1);
     iidx = mov == 0 ? iidx+1 : iidx-1;
-    i = getInteractableItem(currentScreen,iidx);
-    (*(i->update))(i,2);
-    refresh();
+    if(!getInteractableItem(currentScreen,iidx)->enabled) {
+      updateInteractable(iidx,mov);
+    }else{
+      i = getInteractableItem(currentScreen,iidx);
+      (*(i->update))(i,2);
+      refresh();
+    }
+    
   } 
   return iidx;
 }
