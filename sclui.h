@@ -129,7 +129,9 @@ sclui_screen *initScreen(char *title, int interactableItemsCount,int itemsCount,
     int width, int height, int navKey1, int navKey2,color *color); 
 void setup();
 sclui_interactable_item *getInteractableItemByText(sclui_screen *screen, char *name);
-
+void updateScreen();
+void freeScreen(sclui_screen *screen);
+void doQuit();
 sclui_screen *currentScreen = NULL;
 
 /*
@@ -150,6 +152,7 @@ sclui_screen *currentScreen = NULL;
 //Textbox
 char *getTextboxText(sclui_interactable_item *textbox);
 int getTextboxTextLength(sclui_interactable_item *textbox);
+void *setTextBoxUserInput(struct sclui_interactable_item_struct *textbox, char* text);
 
 //Checkbox
 int getCheckBoxValue(sclui_interactable_item *checkbox);
@@ -215,6 +218,7 @@ bool defaultTextBoxFilter(char c) {
 
 void doQuit() {
   curs_set(1);
+  freeScreen(currentScreen);
   endwin();
   exit(0);
 }
@@ -245,6 +249,11 @@ int getTextboxMaxTextLength(struct sclui_interactable_item_struct *textbox) {
 
 char *getTextboxUserInput(struct sclui_interactable_item_struct *textbox) {
   return textbox->textbox_usrInput;
+}
+
+void *setTextBoxUserInput(struct sclui_interactable_item_struct *textbox, char* text) {
+  textbox->textbox_usrInput = text;
+  textbox->textbox_current_input_length = getTextLength(text);
 }
 
 int getCheckBoxValue(sclui_interactable_item *checkbox) {
@@ -324,6 +333,18 @@ sclui_interactable_item *getInteractableItemByText(sclui_screen *screen, char *t
     }
   }
   return NULL;
+}
+
+void freeScreen(sclui_screen *screen) {
+  int il = getCurrentItemsLength(screen);
+  int iil = getCurrentInteractableItemsLength(screen);
+  for(int i = 0; i < il; i++) {
+    free(getItem(screen,i));
+  }
+  for(int i = 0; i < iil; i++) {
+    free(getInteractableItem(screen,i));
+  }
+  free(screen);
 }
 
 /*
@@ -523,7 +544,17 @@ void showItems() {
           gConfig.posY + getItem(currentScreen,i)->y, 
           gConfig.posX + getItem(currentScreen,i)->x
       );
-      addstr(getItemText(getItem(currentScreen,i)));
+      char* t = getItemText(getItem(currentScreen,i));
+      int yOffset = 1;
+      while(*t) {
+        if(*t == '\n') {
+          break;
+          *t++;
+          continue;
+        }
+        printw("%c",*t++);
+      }
+      //addstr(getItemText(getItem(currentScreen,i)));
     }
   }
 
@@ -535,14 +566,17 @@ void showItems() {
   }
 }
 
+void updateCurrentScreen() {
+  printFrame();
+  showItems();
+  refresh();
+}
+
 void runScreen(sclui_screen *screen) {
   currentScreen = screen;
   
   int c, iidx = 0;
-  printFrame();
-  showItems();
-
-  refresh();
+  updateCurrentScreen();
 
   while(1) {
     c  = getch();
