@@ -612,7 +612,7 @@ void runScreen(sclui_screen *screen) {
         if(current->t == TEXTBOX) {
             if(getTextboxCurrentLength(current) >= 0) {
               getTextboxUserInput(current)[current->textbox_current_input_length--] = '\0';
-              if(getTextboxCurrentLength(current) < 0) current->textbox_current_input_length = 0;
+              if(current->textbox_current_input_length < 0) current->textbox_current_input_length = 0;
               current->update(current,2);
             }
         }
