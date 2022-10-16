@@ -454,9 +454,6 @@ void updateButton(sclui_interactable_item *button, int n) {
 void updateTextbox(sclui_interactable_item *textbox, int n) {
   curs_set(1);
   setColor(textbox,n);
-  if(!textbox->enabled) {
-    
-  }
   move(
       gConfig.posY + getInteractableItemY(textbox),
       gConfig.posY + getInteractableItemX(textbox)
