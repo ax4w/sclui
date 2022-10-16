@@ -583,8 +583,11 @@ void updateCurrentScreen() {
   printFrame();
   showItems();
   refresh();
-  iidx = -1;
-  iidx = updateInteractable(iidx,0);
+  iidx = 0;
+  current = getInteractableItem(currentScreen,iidx);
+  if(!current->enabled) {
+    updateInteractable(iidx,0);
+  }
 }
 
 void runScreen(sclui_screen *screen) {
