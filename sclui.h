@@ -214,7 +214,7 @@ void setup() {
   noecho();
   start_color();
   keypad(stdscr,TRUE);
-  init_pair(9,COLOR_BLACK,COLOR_WHITE);
+  
 }
 
 /*
@@ -390,6 +390,7 @@ void centerItem(sclui_item *i, axsis a) {
   *UPDATE INTERACTABLE - MISC
 */
 void setColor(sclui_interactable_item *i, int n) {
+  attroff(COLOR_PAIR(99));
   switch (n) {
     case 1:
       if(i->bcolor != NULL) {
@@ -415,6 +416,10 @@ void setColor(sclui_interactable_item *i, int n) {
           attroff(COLOR_PAIR(i->cpf));
       }
       break;
+    case 99:
+      init_pair(99,COLOR_BLACK,COLOR_WHITE);
+      attron(COLOR_PAIR(99));
+      break;
   }
 }
 
@@ -425,9 +430,6 @@ void setColor(sclui_interactable_item *i, int n) {
 void updateCheckbox(sclui_interactable_item *checkbox, int n) {
   curs_set(0);
   setColor(checkbox,n);
-  if(!checkbox->enabled) {
-    attron(COLOR_PAIR(9));
-  }
   move(
       gConfig.posY + getInteractableItemY(checkbox),
       gConfig.posY + getInteractableItemX(checkbox)
@@ -443,9 +445,6 @@ void updateCheckbox(sclui_interactable_item *checkbox, int n) {
 void updateButton(sclui_interactable_item *button, int n) {
   curs_set(0);
   setColor(button,n);
-  if(!button->enabled) {
-    attron(COLOR_PAIR(9));
-  }
   move(
       gConfig.posY + getInteractableItemY(button),
       gConfig.posY + getInteractableItemX(button)
@@ -461,9 +460,6 @@ void updateButton(sclui_interactable_item *button, int n) {
 void updateTextbox(sclui_interactable_item *textbox, int n) {
   curs_set(1);
   setColor(textbox,n);
-  if(!textbox->enabled) {
-    attron(COLOR_PAIR(9));
-  }
   move(
       gConfig.posY + getInteractableItemY(textbox),
       gConfig.posY + getInteractableItemX(textbox)
