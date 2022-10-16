@@ -583,8 +583,8 @@ void updateCurrentScreen() {
   printFrame();
   showItems();
   refresh();
-  iidx = 0;
-  current = getInteractableItem(currentScreen,iidx);
+  iidx = -1;
+  iidx = updateInteractable(iidx,0);
 }
 
 void runScreen(sclui_screen *screen) {
