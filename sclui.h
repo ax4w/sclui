@@ -492,17 +492,11 @@ int updateInteractable(int iidx, int mov) {
     sclui_interactable_item *i = getInteractableItem(currentScreen,iidx);
     (*(i->update))(i,1);
     iidx = mov == 0 ? iidx+1 : iidx-1;
-    if(!getInteractableItem(currentScreen,iidx)->enabled) {
-      updateInteractable(iidx,mov);
-    }else{
-      i = getInteractableItem(currentScreen,iidx);
-      (*(i->update))(i,2);
-      refresh();
-      return iidx;
-    }
-    
+    i = getInteractableItem(currentScreen,iidx);
+    (*(i->update))(i,2);
+    refresh();
   } 
-  
+  return iidx;
 }
 
 
@@ -586,9 +580,6 @@ void updateCurrentScreen() {
   refresh();
   iidx = 0;
   current = getInteractableItem(currentScreen,iidx);
-  if(!current->enabled) {
-    updateInteractable(iidx,0);
-  }
 }
 
 void runScreen(sclui_screen *screen) {
