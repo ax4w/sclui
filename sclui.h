@@ -160,6 +160,9 @@ int getCheckBoxValue(sclui_interactable_item *checkbox);
 int getCheckBoxDefaultValue(sclui_interactable_item *checkbox);
 
 //General
+
+void updateColor(sclui_interactable_item *item, color *c);
+
 void setInteractableItemX(sclui_interactable_item *item, int x);
 void setInteractableItemY(sclui_interactable_item *item, int y);
 
@@ -235,6 +238,10 @@ int getTextLength(char *s) {
 /*
   *INTERACTABLE ITEMS FUNCTIONS
 */
+
+void updateColor(sclui_interactable_item *item, color *c) {
+  item->color = c;
+}
 
 int getTextboxTextLength(struct sclui_interactable_item_struct *textbox) {
   return textbox->textbox_current_input_length;
