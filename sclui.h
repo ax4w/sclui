@@ -153,6 +153,7 @@ sclui_screen *currentScreen = NULL;
 char *getTextboxText(sclui_interactable_item *textbox);
 int getTextboxTextLength(sclui_interactable_item *textbox);
 void *setTextBoxUserInput(struct sclui_interactable_item_struct *textbox, char* text);
+char *getTextboxUserInput(struct sclui_interactable_item_struct *textbox);
 
 //Checkbox
 int getCheckBoxValue(sclui_interactable_item *checkbox);
