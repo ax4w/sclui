@@ -169,9 +169,10 @@ void setInteractableItemY(sclui_interactable_item *item, int y);
 
 int getInteractableItemX(sclui_interactable_item *item);
 int getInteractableItemY(sclui_interactable_item *item);
-
+sclui_interactable_item *getInteractableItem(sclui_screen *screen, int i);
 //add
 void addInteractableItem(sclui_screen *screen, sclui_interactable_item *item);
+
 
 /*
 ==================Items===================================
