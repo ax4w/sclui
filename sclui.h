@@ -49,7 +49,7 @@ typedef struct sclui_interactable_item_struct{
   struct sclui_interactable_item_struct *self;
 
   void* screen;
-  color *color;
+  color *bcolor;
   color *fcolor;
   int cp;
   int cpf;
