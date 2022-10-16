@@ -1,7 +1,6 @@
 #pragma once
 
 #include <curses.h>
-#include <ncurses.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <ctype.h>
