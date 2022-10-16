@@ -85,7 +85,6 @@ typedef struct {
     *General
   */
   char *title;
-  int title_length;
   
   int title_length, upKey, downKey, width, height;
 
