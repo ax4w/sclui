@@ -147,6 +147,7 @@ sclui_screen *currentScreen = NULL;
 #define createCheckBox(text,defaultValue,x,y,color,focus_color) \
   createInteractableItem(text,NULL,NULL,CHECKBOX,x,y,0,defaultValue,color,focus_color,7,8)
 
+sclui_interactable_item *current;
 
 
 //Textbox
@@ -578,6 +579,7 @@ void updateCurrentScreen() {
   printFrame();
   showItems();
   refresh();
+  current = getInteractableItem(screen,0);
 }
 
 void runScreen(sclui_screen *screen) {
@@ -588,7 +590,7 @@ void runScreen(sclui_screen *screen) {
 
   while(1) {
     c  = getch();
-    sclui_interactable_item *current = getInteractableItem(screen,iidx);
+    current = getInteractableItem(screen,iidx);
 
     switch (c) {
       case CONFIRM_KEY:
