@@ -498,10 +498,11 @@ int updateInteractable(int iidx, int mov) {
       i = getInteractableItem(currentScreen,iidx);
       (*(i->update))(i,2);
       refresh();
+      return iidx;
     }
     
   } 
-  return iidx;
+  
 }
 
 
