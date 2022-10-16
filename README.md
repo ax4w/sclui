@@ -6,8 +6,6 @@ SCLUI should only be used in terminals, that support colors.
 
 **For an example app look at ![SimpMath](https://github.com/0x3alex/SimplMath)**
 
-![Screenshot](https://i.imgur.com/usyhRe6.png) 
-
 ## Docs
 
 ### Setup
