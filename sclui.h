@@ -427,7 +427,7 @@ void updateCheckbox(sclui_interactable_item *checkbox, int n) {
       gConfig.posY + getInteractableItemY(checkbox),
       gConfig.posY + getInteractableItemX(checkbox)
   );
-  printw("| %s: %c |", checkbox->text,getCheckBoxValue(checkbox) == 0 ? 'O' : 'X');
+  printw("[ %s: (%c) ]", checkbox->text,getCheckBoxValue(checkbox) == 0 ? ' ' : 'X');
   move(
       gConfig.posY + getInteractableItemY(checkbox),
       gConfig.posY + getInteractableItemX(checkbox)
@@ -442,7 +442,7 @@ void updateButton(sclui_interactable_item *button, int n) {
       gConfig.posY + getInteractableItemY(button),
       gConfig.posY + getInteractableItemX(button)
   );
-  printw("| %s |",button->text);
+  printw("[ %s ]",button->text);
   move(
       gConfig.posY + getInteractableItemY(button),
       gConfig.posY + getInteractableItemX(button)
@@ -457,7 +457,7 @@ void updateTextbox(sclui_interactable_item *textbox, int n) {
       gConfig.posY + getInteractableItemY(textbox),
       gConfig.posY + getInteractableItemX(textbox)
   );
-  printw("| %s: ",textbox->text);
+  printw("[ %s: ",textbox->text);
   for(int i = 0; i <= getTextboxMaxTextLength(textbox); i++) printw(" ");
   move(
       gConfig.posY + getInteractableItemY(textbox), 
@@ -471,7 +471,7 @@ void updateTextbox(sclui_interactable_item *textbox, int n) {
       gConfig.posX  + getInteractableItemX(textbox) + textbox->text_length+ 5 
         + getTextboxMaxTextLength(textbox)
   );
-  addstr("|");
+  addstr("]");
   move(
       gConfig.posY + getInteractableItemY(textbox),
       gConfig.posX + getInteractableItemX(textbox) + textbox->text_length + 1 
@@ -555,12 +555,9 @@ void showItems() {
       while(*t) {
         if(*t == '\n') {
           break;
-          *t++;
-          continue;
         }
         printw("%c",*t++);
       }
-      //addstr(getItemText(getItem(currentScreen,i)));
     }
   }
 
