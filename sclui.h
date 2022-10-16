@@ -53,6 +53,7 @@ typedef struct sclui_interactable_item_struct{
   color *fcolor;
   int cp;
   int cpf;
+  bool enabled;
 
   /*
      *Button
@@ -95,8 +96,6 @@ typedef struct {
   */
   char *title;
   int title_length;
-
-  bool enabled;
   
   int upKey;
   int downKey;
