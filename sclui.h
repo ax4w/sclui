@@ -95,6 +95,8 @@ typedef struct {
   */
   char *title;
   int title_length;
+
+  bool enabled;
   
   int upKey;
   int downKey;
@@ -594,42 +596,44 @@ void runScreen(sclui_screen *screen) {
     c  = getch();
     current = getInteractableItem(screen,iidx);
 
-    switch (c) {
-      case CONFIRM_KEY:
-        switch (current->t)
-        {
-        case TEXTBOX:
-          if(c == ' ') goto txt;
+    if(current->enabled) {
+      switch (c) {
+        case CONFIRM_KEY:
+          switch (current->t)
+          {
+          case TEXTBOX:
+            if(c == ' ') goto txt;
+            break;
+          case CHECKBOX:
+            current->checkbox_checkBoxVal = flipCheckBoxValue(getInteractableItem(screen,iidx));
+            current->update(current,2);
+            break;
+          default:
+            (*(current->button_action))();
+            break;
+          }
           break;
-        case CHECKBOX:
-          current->checkbox_checkBoxVal = flipCheckBoxValue(getInteractableItem(screen,iidx));
-          current->update(current,2);
+        case KEY_BACKSPACE:
+          if(current->t == TEXTBOX) {
+              if(getTextboxCurrentLength(current) >= 0) {
+                getTextboxUserInput(current)[current->textbox_current_input_length--] = '\0';
+                if(current->textbox_current_input_length < 0) current->textbox_current_input_length = 0;
+                current->update(current,2);
+              }
+          }
           break;
         default:
-          (*(current->button_action))();
+          txt:
+            if(current->t == TEXTBOX) {
+              if(getTextboxCurrentLength(current) < getTextboxMaxTextLength(current)) {
+                  if(current->textbox_filter(c)) {
+                    getTextboxUserInput(current)[current->textbox_current_input_length++] = c;
+                    current->update(current,2);
+                  }
+              }
+            }
           break;
-        }
-        break;
-      case KEY_BACKSPACE:
-        if(current->t == TEXTBOX) {
-            if(getTextboxCurrentLength(current) >= 0) {
-              getTextboxUserInput(current)[current->textbox_current_input_length--] = '\0';
-              if(current->textbox_current_input_length < 0) current->textbox_current_input_length = 0;
-              current->update(current,2);
-            }
-        }
-        break;
-      default:
-        txt:
-          if(current->t == TEXTBOX) {
-            if(getTextboxCurrentLength(current) < getTextboxMaxTextLength(current)) {
-                if(current->textbox_filter(c)) {
-                  getTextboxUserInput(current)[current->textbox_current_input_length++] = c;
-                  current->update(current,2);
-                }
-            }
-          }
-        break;
+      }
     }
 
     if(c == screen->downKey) {
@@ -669,6 +673,7 @@ sclui_interactable_item *createInteractableItem(
   s->t = t;
   s->x = x;
   s->y = y;
+  s->enabled = true;
   switch (t) {
     case TEXTBOX:
       s->textbox_max_text_length = max_text_length;
