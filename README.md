@@ -4,7 +4,7 @@ SCLUI extends ```curses.h``` with prebuild components to create simple but good 
 
 SCLUI should only be used in terminals, that support colors.
 
-**For an example app look at ![SimpMath](https://github.com/0x3alex/SimplMath)**
+**For an example app look at ![SimplMath](https://github.com/0x3alex/SimplMath)**
 
 ## Docs
 
