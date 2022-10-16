@@ -27,8 +27,7 @@ typedef enum {BUTTON,TEXTBOX, CHECKBOX} type;
 typedef enum {X,Y,XY} axsis;
 
 typedef struct {
-  int b;
-  int f;
+  int b,f;
 } color;
 
 typedef struct sclui_interactable_item_struct{
@@ -36,9 +35,7 @@ typedef struct sclui_interactable_item_struct{
      * General
   */
   char* text;
-  int text_length;
-  int x;
-  int y;
+  int text_length,x,y;
   type t;
 
   void(*update)(struct sclui_interactable_item_struct *item,int s);
@@ -48,10 +45,8 @@ typedef struct sclui_interactable_item_struct{
   struct sclui_interactable_item_struct *self;
 
   void* screen;
-  color *bcolor;
-  color *fcolor;
-  int cp;
-  int cpf;
+  color *bcolor, *fcolor;
+  int cp,cpf;
   bool enabled;
 
   /*
@@ -65,22 +60,18 @@ typedef struct sclui_interactable_item_struct{
   */
   char *textbox_usrInput;
   bool (*textbox_filter)(char);
-  int textbox_max_text_length;
-  int textbox_current_input_length;
+  int textbox_max_text_length,textbox_current_input_length;
 
   /*
     *Checkbox
   */
-  int checkbox_checkBoxVal;
-  int checkbox_defaultVal;
+  int checkbox_checkBoxVal,checkbox_defaultVal;
   
 } sclui_interactable_item;
 
 typedef struct sclui_item_struct{
   char *text;
-  int text_length;
-  int x;
-  int y;
+  int text_length,x,y;
 
   struct sclui_item_struct *self;
   void(*center)(struct sclui_item_struct *i, axsis a);
@@ -96,11 +87,7 @@ typedef struct {
   char *title;
   int title_length;
   
-  int upKey;
-  int downKey;
-
-  int width;
-  int height;
+  int title_length, upKey, downKey, width, height;
 
   color *color;
   
@@ -108,15 +95,13 @@ typedef struct {
     *Interactable Items
   */
   sclui_interactable_item **interactable_items;
-  int interactable_items_length;
-  int interactable_items_current_length;
+  int interactable_items_length, interactable_items_current_length;
 
   /*
     *Items
   */
   sclui_item **items;
-  int items_length;
-  int items_current_length;
+  int items_length, items_current_length;
 } sclui_screen; 
 
 
