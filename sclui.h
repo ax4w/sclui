@@ -129,7 +129,7 @@ sclui_screen *initScreen(char *title, int interactableItemsCount,int itemsCount,
     int width, int height, int navKey1, int navKey2,color *color); 
 void setup();
 sclui_interactable_item *getInteractableItemByText(sclui_screen *screen, char *name);
-void updateScreen();
+void updateCurrentScreen();
 void freeScreen(sclui_screen *screen);
 void doQuit();
 sclui_screen *currentScreen = NULL;
