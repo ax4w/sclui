@@ -224,6 +224,10 @@ void TextBox::pop() {
     value.pop_back();
 }
 
+void TextBox::setText(std::string s) {
+    value = s;
+}
+
 void Screen::drawFrame() {
     move(0,0);
     init_pair(1,COLOR_BLACK,COLOR_WHITE);

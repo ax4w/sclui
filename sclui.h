@@ -54,6 +54,7 @@ public:
 
     virtual void draw(bool v) override;
     virtual std::string getValue() override;
+    void setText(std::string s);
     int getValueLength();
     int getMaxLength();
     void append(char c);
