@@ -52,7 +52,6 @@ private:
 public:
     bool(*filter)(int) = nullptr;
     TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int));
-
     virtual void draw(bool v) override;
     virtual std::string getValue() override;
     void setText(std::string s);
