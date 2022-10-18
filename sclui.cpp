@@ -311,17 +311,20 @@ void Screen::run() {
                 break;
             default:
                 textBoxHandler:
-                    if(currentItem->getType() == BasicItem::TEXTBOX) {
-                        textBoxCast = (TextBox*) currentItem;
-                        if(c == KEY_BACKSPACE && textBoxCast->getValueLength() > 0) {
-                            textBoxCast->pop();
-                        }else{
-                            if(textBoxCast->getValueLength() < textBoxCast->getMaxLength() && (*(textBoxCast->filter))(c)) {
-                                textBoxCast->append(c);
+                    if(currentItem != NULL) {
+                        if(currentItem->getType() == BasicItem::TEXTBOX) {
+                            textBoxCast = (TextBox*) currentItem;
+                            if(c == KEY_BACKSPACE && textBoxCast->getValueLength() > 0) {
+                                textBoxCast->pop();
+                            }else{
+                                if(textBoxCast->getValueLength() < textBoxCast->getMaxLength() && (*(textBoxCast->filter))(c)) {
+                                    textBoxCast->append(c);
+                                }
                             }
+                            currentItem->draw(true);
                         }
-                        currentItem->draw(true);
                     }
+                    
                 break;
         }
         refresh();
