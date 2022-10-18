@@ -146,6 +146,7 @@ void Screen::addItem(BasicItem *i) {
 }
 
 BasicItem *Screen::getFirstInteractableItem() {
+    if(items.size() == 0) return NULL;
     int index = 0;
     for(auto &i: items) {
         if(i->isInteractable()) {
