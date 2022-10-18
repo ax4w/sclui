@@ -33,6 +33,13 @@ BasicItem::types BasicItem::getType() {
     return type;
 }
 
+void BasicItem::setColor(int c) {
+    color = c;
+}
+void BasicItem::setColorFocus(int c) {
+    colorFocus = c;
+}
+
 std::string BasicItem::getName() {
     return name;
 }
@@ -60,7 +67,7 @@ void BasicItem::moveTo() {
     move(y,x);
 }
 
-void BasicItem::setColor(bool b) {
+void BasicItem::chooseColor(bool b) {
     attroff(COLOR_PAIR(itemIndex));
     if(color == COLOR_BLANK) return;
     init_pair(itemIndex,COLOR_BLACK, b ? colorFocus : color);
@@ -81,7 +88,7 @@ Button::Button(std::string pName, int pX, int pY, int pColor, int pColorFocus, v
 }
 
 void Button::draw(bool v) {
-    setColor(v);
+    chooseColor(v);
     curs_set(0);
     this->moveTo();
     printw("[ %s ]" , name.c_str()); 
@@ -105,7 +112,7 @@ CheckBox::CheckBox(std::string pName,int pX, int pY,int pColor, int pColorFocus,
 }
 
 void CheckBox::draw(bool v) {
-    setColor(v);
+    chooseColor(v);
     curs_set(0);
     this->moveTo();
     printw("[ %s (%c) ]", name.c_str(), value == true ? 'X' : ' ');
@@ -131,7 +138,7 @@ Text::Text(std::string pName,int pX, int pY,int pColor) {
 
 }
 void Text::draw(bool v) {
-    setColor(v);
+    chooseColor(v);
     curs_set(0);
     this->moveTo();
     printw("%s", name.c_str());
@@ -198,7 +205,7 @@ int TextBox::getMaxLength() {
 }
 
 void TextBox::draw(bool v) {
-    setColor(v);
+    chooseColor(v);
     curs_set(1);
     this->moveTo();
     printw("[ %s> " , name.c_str()); 
@@ -280,6 +287,7 @@ void Screen::drawItems() {
     }
     vecIndex = 0;
     currentItem = getFirstInteractableItem();
+    refresh();
     
 }
 
@@ -338,10 +346,13 @@ void Screen::run() {
     }
 }
 
+void Screen::update() {
+    drawItems();
+}
+
 void Screen::draw() {
     drawFrame();
     drawItems();
-    refresh();
     run();
 }
 

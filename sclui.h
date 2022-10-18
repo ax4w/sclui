@@ -26,7 +26,9 @@ public:
     bool isInteractable();
     void setInteractable(bool v);
     void moveTo();
-    void setColor(bool b);
+    void chooseColor(bool b);
+    void setColor(int c);
+    void setColorFocus(int c);
     virtual void draw(bool v) = 0;
 protected:
     std::string name = ("");
