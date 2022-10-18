@@ -1,11 +1,5 @@
 #include "sclui.h"
 
-void doQuit() {
-  curs_set(1);
-  endwin();
-  exit(0);
-}
-
 int main(void) {
     initSclui();
     Screen mainScreen("Test",30,15,'-','|');

@@ -4,6 +4,13 @@
 
 static int cIndex = 2;
 
+void doQuit() {
+  curs_set(1);
+  endwin();
+  exit(0);
+}
+
+
 void initSclui() {
     WINDOW *w = initscr();
     assert(w != NULL);

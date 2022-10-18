@@ -11,6 +11,8 @@ bool isText(int c);
 
 bool isNumber(int c);
 
+void doQuit();
+
 class BasicItem {
 public:
     typedef enum {BASIC,BUTTON,CHECKBOX,TEXTBOX} types; 
