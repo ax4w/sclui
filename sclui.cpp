@@ -359,6 +359,8 @@ void Screen::run() {
 }
 
 void Screen::update() {
+    clear();
+    drawFrame();
     drawItems();
 }
 
