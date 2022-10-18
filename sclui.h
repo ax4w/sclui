@@ -119,4 +119,4 @@ public:
     void update();
 };
 
-static screen *currentScreen = nullptr;
+Screen *currentScreen = nullptr;
