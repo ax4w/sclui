@@ -3,7 +3,7 @@
 #include <curses.h>
 
 static int cIndex = 2;
-static Screen *currentScreen;
+static Screen *currentScreen = nullptr;
 
 void doQuit() {
     currentScreen->free();
