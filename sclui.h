@@ -94,7 +94,7 @@ public:
 class Screen {
     std::string title;
     int width, height,vecIndex;
-    BasicItem* currentItem;
+    BasicItem *currentItem;
     std::vector<BasicItem *> items = {};
     char hFrame, vFrame;
     void drawFrame();
@@ -103,6 +103,7 @@ class Screen {
     void doMove(int mov);
     bool selectNext(BasicItem *i);
     BasicItem *getFirstInteractableItem();
+    
 
 public:
     Screen(std::string pTitle, int pWidth, int pHeight, char pHFrame, char pVFrame);
@@ -116,6 +117,7 @@ public:
 
     BasicItem *getItemAt(int index);
 
+    void free();
     void draw();
     void update();
 };

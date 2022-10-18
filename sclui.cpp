@@ -3,11 +3,13 @@
 #include <curses.h>
 
 static int cIndex = 2;
+static Screen *currentScreen;
 
 void doQuit() {
-  curs_set(1);
-  endwin();
-  exit(0);
+    currentScreen->free();
+    curs_set(1);
+    endwin();
+    exit(0);
 }
 
 
@@ -365,6 +367,10 @@ void Screen::update() {
 }
 
 void Screen::draw() {
+    if(currentScreen != nullptr) {
+        currentScreen->free();
+    }
+    currentScreen = this;
     clear();
     drawFrame();
     drawItems();
@@ -404,4 +410,9 @@ void Screen::centerItem(Screen::axis pAxis, BasicItem *i) {
 
 BasicItem *Screen::getItemAt(int index) {
     return items.at(index);
+}
+void Screen::free() {
+    for(auto &i : items) {
+        delete i;
+    }
 }
