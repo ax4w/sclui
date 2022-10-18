@@ -204,7 +204,7 @@ void TextBox::draw(bool v) {
     printw("[ %s> " , name.c_str()); 
     for(int i = 0; i < maxLength; i++) printw(" ");
     printw("]");
-    move(y,x+7);
+    move(y,x+4 + name.length());
     printw("%s",value.c_str());
 }
 std::string TextBox::getValue() {
