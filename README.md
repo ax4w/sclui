@@ -12,7 +12,9 @@ Simply call:
 initSclui();
 ```
 
-### Create Screen
+### Class : Screen
+
+#### Create
 
 Signature is:
 ```C++
@@ -23,44 +25,37 @@ Usage is:
 ```C++
 Screen *menu = new Screen("Menu",40,14,'-','|');
 ```
+#### General
+##### Add Items to Screen
 
-### Create Items
-
-#### Button
 Signature is:
 ```C++
-Button(std::string pName,int px, int pY,int pColor, int pColorFocus, void(*actionEvent)());
+void addItem(BasicItem *i)
 ```
 
-Usage is:
-```C++
-Button *quit = new Button("Quit",1,13,COLOR_WHITE,COLOR_RED,&doQuit);
-```
-
-#### TextBox
-Signaure is:
-```C++
-TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int));
-```
-
-Usage is:
-```C++
-minimum = new TextBox("Text",1,3,4,COLOR_WHITE,COLOR_BLUE,&isText);
-```
-
-#### CheckBox
+##### Center Item
 Signature is:
 ```C++
-CheckBox(std::string pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
+void centerItem(Screen::axis pAxis, BasicItem *i)
 ```
-
-Usage is:
+##### getItemAt
 ```C++
-CheckBox *checkbox1 = new CheckBox("check",1,6,COLOR_CYAN, COLOR_RED,false);
+BasicItem *getItemAt(int index);
 ```
 
+##### draw
+```C++
+void draw();
+```
+
+##### update
+```C++
+void update();
+```
+
+### Class : BasicItem
 #### Text
-
+##### Create
 Signature is:
 ```C++
 Text(std::string pName,int px, int pY,int pColor);
@@ -70,38 +65,8 @@ Usage is:
 ```C++
 Text *text1 = new Text("Hello World",1,3,COLOR_BLANK);
 ```
-### Add Items to Screen
 
-*Function of class Screen*
-
-Signature is:
-```C++
-void addItem(BasicItem *i)
-```
-
-Usage is:
-```C++
-//menu is a screen
-menu->addItem(quit);
-```
-
-### Position Items on Screen
-#### Center
-*Function of class Screen* 
-
-Signature is:
-```C++
-void centerItem(Screen::axis pAxis, BasicItem *i)
-```
-
-Usage is:
-```C++
-//menu is a screen
-menu->centerItem(menu->X,quit);
-```
-
-#### Manual
-*Functions of class BasicItem*
+#### General
 
 ##### getX
 
@@ -123,4 +88,106 @@ int setX(int pX);
 ```C++
 int setY(int pY);
 ```
+#### isInteractable
+```C++
+bool isInteractable();
+```
+
+#### setInteractable
+```C++
+void setInteractable(bool v);
+```
+
+#### moveTo
+```C++
+void moveTo();
+```
+
+#### setColor
+```C++
+void setColor(int c);
+```
+
+#### setColorFocus
+```C++
+void setColorFocus(int c);
+```
+
+#### isVisible
+```C++
+bool isVisible();
+```
+
+#### setVisible
+```C++
+void setVisible(bool v);
+```
+
+#### draw
+```C++
+void draw(bool v);
+```
+
+### Class : Interactable
+Every interactable is an instance of *BasicItem*
+#### Button
+##### Create
+Signature is:
+```C++
+Button(std::string pName,int px, int pY,int pColor, int pColorFocus, void(*actionEvent)());
+```
+
+#### TextBox
+##### Create
+Signaure is:
+```C++
+TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int));
+```
+##### General
+
+##### setText
+```C++
+void setText(std::string s);
+```
+
+##### getValueLength
+```C++
+int getValueLength();
+```
+
+##### maxLength
+```C++
+int getMaxLength();
+```
+
+##### append
+```C++
+void append(char c);
+```
+
+##### pop
+```C++
+void pop();
+```
+
+#### CheckBox
+##### Create
+Signature is:
+```C++
+CheckBox(std::string pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
+```
+#### setValue
+```C++
+void setValue(bool v);
+```
+
+#### General
+
+#### getValue
+```C++
+T getValue()
+```
+
+
+
 

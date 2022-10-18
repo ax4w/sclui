@@ -26,7 +26,6 @@ public:
     bool isInteractable();
     void setInteractable(bool v);
     void moveTo();
-    void chooseColor(bool b);
     void setColor(int c);
     void setColorFocus(int c);
     bool isVisible();
@@ -37,6 +36,7 @@ protected:
     int x,y,color, colorFocus;
     bool interactable,visible = true;
     types type;
+    void chooseColor(bool b);
 };
 
 template <class T>
@@ -83,8 +83,6 @@ public:
 
     virtual void draw(bool v) override;
     virtual void getValue() override;
-
-    void* getActionEvent();
 };
 
 class Text : public BasicItem{
