@@ -295,6 +295,7 @@ void Screen::run() {
     if(currentItem != NULL) {
         currentItem->draw(true);
     }
+    currentScreen = this;
     CheckBox *checkBoxCast = nullptr;
     Button *buttonCast = nullptr;
     TextBox *textBoxCast = nullptr;
