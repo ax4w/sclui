@@ -39,14 +39,13 @@ protected:
     types type;
 };
 
-//"Bridge" between BasicItem and all the actual items for the getValue() return type
 template <class T>
-class Item : public BasicItem{
+class Interactable : public BasicItem{
 public:
     virtual T getValue() = 0;
 };
 
-class TextBox : public Item<std::string> {
+class TextBox : public Interactable<std::string> {
 private:
     std::string value;
     int maxLength;
@@ -63,7 +62,7 @@ public:
     void pop();
 };
 
-class CheckBox : public Item<bool> {
+class CheckBox : public Interactable<bool> {
 private:
     bool value;
 public:
@@ -74,7 +73,7 @@ public:
     void setValue(bool v);
 };
 
-class Button : public Item<void> {
+class Button : public Interactable<void> {
 private:
     
 public:
