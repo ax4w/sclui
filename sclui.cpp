@@ -351,7 +351,6 @@ void Screen::update() {
 }
 
 void Screen::draw() {
-    currentScreen = this;
     drawFrame();
     drawItems();
     run();

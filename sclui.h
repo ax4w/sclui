@@ -118,5 +118,3 @@ public:
     void draw();
     void update();
 };
-
-static Screen *currentScreen = nullptr;
