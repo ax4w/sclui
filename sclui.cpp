@@ -131,10 +131,6 @@ void Text::draw(bool v) {
     this->moveTo();
 }
 
-std::string Text::getValue() {
-    return name;
-}
-
 //screen
 Screen::Screen(std::string pTitle,int pWidth, int pHeight, char pHFrame, char pVFrame) {
     width = pWidth;

@@ -81,12 +81,11 @@ public:
     void* getActionEvent();
 };
 
-class Text : public Item<std::string> {
+class Text : public BasicItem{
 public:
     Text(std::string pName,int px, int pY,int pColor);
 
     virtual void draw(bool v) override;
-    virtual std::string getValue() override;
 };
 
 class Screen {
