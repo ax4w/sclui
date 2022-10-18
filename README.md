@@ -16,25 +16,19 @@ initSclui();
 
 #### Create
 
-Signature is:
 ```C++
 Screen(std::string pTitle, int pWidth, int pHeight, char pHFrame, char pVFrame);
 ```
 
-Usage is:
-```C++
-Screen *menu = new Screen("Menu",40,14,'-','|');
-```
 #### General
 ##### Add Items to Screen
 
-Signature is:
 ```C++
 void addItem(BasicItem *i)
 ```
 
 ##### Center Item
-Signature is:
+
 ```C++
 void centerItem(Screen::axis pAxis, BasicItem *i)
 ```
@@ -56,14 +50,9 @@ void update();
 ### Class : BasicItem
 #### Text
 ##### Create
-Signature is:
+
 ```C++
 Text(std::string pName,int px, int pY,int pColor);
-```
-
-Usage is:
-```C++
-Text *text1 = new Text("Hello World",1,3,COLOR_BLANK);
 ```
 
 #### General
@@ -132,14 +121,14 @@ void draw(bool v);
 Every interactable is an instance of *BasicItem*
 #### Button
 ##### Create
-Signature is:
+
 ```C++
 Button(std::string pName,int px, int pY,int pColor, int pColorFocus, void(*actionEvent)());
 ```
 
 #### TextBox
 ##### Create
-Signaure is:
+
 ```C++
 TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int));
 ```
@@ -172,7 +161,7 @@ void pop();
 
 #### CheckBox
 ##### Create
-Signature is:
+
 ```C++
 CheckBox(std::string pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
 ```
