@@ -411,6 +411,7 @@ void Screen::centerItem(Screen::axis pAxis, BasicItem *i) {
 BasicItem *Screen::getItemAt(int index) {
     return items.at(index);
 }
+
 void Screen::free() {
     for(auto &i : items) {
         delete i;
