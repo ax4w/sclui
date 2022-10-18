@@ -387,3 +387,7 @@ void Screen::centerItem(Screen::axis pAxis, BasicItem *i) {
             break;
     }
 }
+
+BasicItem *Screen::getItemAt(int index) {
+    return items.at(index);
+}

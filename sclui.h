@@ -115,6 +115,8 @@ public:
 
     void centerItem(Screen::axis pAxis, BasicItem *i);
 
+    BasicItem *getItemAt(int index);
+
     void draw();
     void update();
 };
