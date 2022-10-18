@@ -29,11 +29,13 @@ public:
     void chooseColor(bool b);
     void setColor(int c);
     void setColorFocus(int c);
+    bool isVisible();
+    void setVisible(bool v);
     virtual void draw(bool v) = 0;
 protected:
     std::string name = ("");
     int x,y,color, colorFocus;
-    bool interactable;
+    bool interactable,visible = true;
     types type;
 };
 

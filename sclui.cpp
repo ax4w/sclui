@@ -33,6 +33,13 @@ BasicItem::types BasicItem::getType() {
     return type;
 }
 
+bool BasicItem::isVisible() {
+    return visible;
+}
+void BasicItem::setVisible(bool v) {
+    visible = v;
+}
+
 void BasicItem::setColor(int c) {
     color = c;
 }
@@ -163,7 +170,7 @@ BasicItem *Screen::getFirstInteractableItem() {
     if(items.size() == 0) return NULL;
     int index = 0;
     for(auto &i: items) {
-        if(i->isInteractable()) {
+        if(i->isInteractable() && i->isVisible()) {
             vecIndex = index;
             return i;
         }
@@ -255,7 +262,7 @@ void Screen::drawFrame() {
 }
 
 bool Screen::selectNext(BasicItem *i) {
-    if(!i->isInteractable()) return false;
+    if(!i->isInteractable() || !i->isVisible()) return false;
     i->draw(true);
     return true;
 }
@@ -287,7 +294,8 @@ void Screen::doMove(int mov) {
 
 void Screen::drawItems() {
     for(auto &i : items) {
-        i->draw(false);
+        if(i->isVisible())
+            i->draw(false);
     }
     vecIndex = 0;
     currentItem = getFirstInteractableItem();
