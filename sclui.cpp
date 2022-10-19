@@ -2,6 +2,7 @@
 #include <cstring>
 #include <curses.h>
 
+using namespace sclui;
 static int cIndex = 2;
 static Screen *currentScreen = nullptr;
 

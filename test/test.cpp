@@ -1,5 +1,6 @@
 #include "sclui.h"
 
+using namespace sclui;
 //global scope to access it in extOnV
 TextBox *textbox1 = nullptr;
 
