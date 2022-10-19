@@ -54,6 +54,12 @@ void update();
 ```C++
 Text(std::string pName,int px, int pY,int pColor);
 ```
+#### Events
+
+##### onDraw
+```C++
+void (*onDraw)();
+```
 
 #### General
 
@@ -123,7 +129,12 @@ Every interactable is an instance of *BasicItem*
 ##### Create
 
 ```C++
-Button(std::string pName,int px, int pY,int pColor, int pColorFocus, void(*actionEvent)());
+Button(std::string pName,int px, int pY,int pColor, int pColorFocus);
+```
+##### Events
+###### onDraw
+```C++
+void(*onButtonPress)();
 ```
 
 #### TextBox
@@ -132,29 +143,36 @@ Button(std::string pName,int px, int pY,int pColor, int pColorFocus, void(*actio
 ```C++
 TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int));
 ```
+##### Events
+
+###### onKeyPress
+```C++
+void(*onKeyPress)(int)
+```
+
 ##### General
 
-##### setText
+###### setText
 ```C++
 void setText(std::string s);
 ```
 
-##### getValueLength
+###### getValueLength
 ```C++
 int getValueLength();
 ```
 
-##### maxLength
+###### maxLength
 ```C++
 int getMaxLength();
 ```
 
-##### append
+###### append
 ```C++
 void append(char c);
 ```
 
-##### pop
+###### pop
 ```C++
 void pop();
 ```
@@ -165,16 +183,22 @@ void pop();
 ```C++
 CheckBox(std::string pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
 ```
-#### setValue
+#### Events
+##### onCheckBoxChange
 ```C++
-void setValue(bool v);
+void(*onCheckBoxChange)();
 ```
 
 #### General
 
-#### getValue
+##### getValue
 ```C++
 T getValue()
+```
+
+##### setValue
+```C++
+void setValue(bool v);
 ```
 
 
