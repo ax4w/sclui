@@ -23,12 +23,16 @@ void initSclui() {
     clear();
 }
 
-bool isText(int c) {
+bool TextBoxFilterIsText(int c) {
     return isalpha(c) || c == ' ';
 }
 
-bool isNumber(int c) {
+bool TextBoxFilterIsNumer(int c) {
     return isdigit(c);
+}
+
+bool TextBoxFilterAllowAll(int c) {
+    return true;
 }
 
 BasicItem::types BasicItem::getType() {
@@ -84,14 +88,13 @@ void BasicItem::chooseColor(bool b) {
 }
 
 
-Button::Button(std::string pName, int pX, int pY, int pColor, int pColorFocus, void(*pActionEvent)()) {
+Button::Button(std::string pName, int pX, int pY, int pColor, int pColorFocus) {
     name = pName;
     type = BUTTON;
     color = pColor;
     colorFocus = pColorFocus;
     itemIndex = cIndex++;
     interactable = true;
-    actionEvent = pActionEvent;
     x = pX;
     y = pY;
 }
@@ -205,6 +208,18 @@ TextBox::TextBox(std::string pName,int pX, int pY, int pMaxLength,int pColor, in
     filter = pFilter;
 }
 
+void TextBox::defaultKeyPressEvent(int c) {
+    if(c == KEY_BACKSPACE && this->getValueLength() > 0) {
+        this->pop();
+    }else{
+        if(this->getValueLength() < this->getMaxLength() && (*(this->filter))(c)) {
+            this->append(c);
+        }
+    }
+     if(this->onDraw != nullptr) (*(this->onDraw))();
+    this->draw(true);
+}
+
 int TextBox::getValueLength() {
     return value.length();
 }
@@ -223,6 +238,7 @@ void TextBox::draw(bool v) {
     move(y,x+3 + name.length());
     printw("%s",value.c_str());
 }
+
 std::string TextBox::getValue() {
     return value;
 }
@@ -265,6 +281,7 @@ void Screen::drawFrame() {
 
 bool Screen::selectNext(BasicItem *i) {
     if(!i->isInteractable() || !i->isVisible()) return false;
+    if(i->onDraw != nullptr) (*(i->onDraw))();
     i->draw(true);
     return true;
 }
@@ -273,9 +290,11 @@ void Screen::doMove(int mov) {
     if(mov == 0)  { //down
         for(int i = vecIndex+1; i < items.size(); i++) {
             if(selectNext(items.at(i))) {
+                if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
                 currentItem->draw(false);
                 vecIndex = i;
                 currentItem = items.at(i);
+                if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
                 currentItem->draw(true);
                 return;
             }
@@ -283,9 +302,11 @@ void Screen::doMove(int mov) {
     }else{ //up
         for(int i = vecIndex-1; i >= 0; i--) {
             if(selectNext(items.at(i))) {
+                if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
                 currentItem->draw(false);
                 vecIndex = i;
                 currentItem = items.at(i);
+                if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
                 currentItem->draw(true);
                 return;
             }
@@ -296,8 +317,11 @@ void Screen::doMove(int mov) {
 
 void Screen::drawItems() {
     for(auto &i : items) {
-        if(i->isVisible())
+        if(i->isVisible()) {
+            if(i->onDraw != nullptr) (*(i->onDraw))();
             i->draw(false);
+        }
+            
     }
     vecIndex = 0;
     currentItem = getFirstInteractableItem();
@@ -307,6 +331,7 @@ void Screen::drawItems() {
 
 void Screen::run() {
     if(currentItem != NULL) {
+        if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
         currentItem->draw(true);
     }
     CheckBox *checkBoxCast = nullptr;
@@ -326,16 +351,23 @@ void Screen::run() {
                 switch(currentItem->getType()) {
                     case BasicItem::CHECKBOX:
                         checkBoxCast = (CheckBox*) currentItem;
-                        checkBoxCast->setValue((bool*)(checkBoxCast->getValue())?false:true);
+
+                        if(checkBoxCast->onCheckBoxChange == nullptr)
+                            checkBoxCast->setValue((bool*)(checkBoxCast->getValue())?false:true);
+                        else
+                            (*(checkBoxCast->onCheckBoxChange))();
+
                         break;
                     case BasicItem::BUTTON:
                         buttonCast = (Button*) currentItem;
-                        (*(buttonCast->actionEvent))();
+                        if(buttonCast->onButtonPress != nullptr)
+                            (*(buttonCast->onButtonPress))();
                         break;
                     case BasicItem::TEXTBOX:
                         goto textBoxHandler;
                         break;
                 }
+                 if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
                 currentItem->draw(true);
                 break;
             default:
@@ -343,14 +375,12 @@ void Screen::run() {
                     if(currentItem != NULL) {
                         if(currentItem->getType() == BasicItem::TEXTBOX) {
                             textBoxCast = (TextBox*) currentItem;
-                            if(c == KEY_BACKSPACE && textBoxCast->getValueLength() > 0) {
-                                textBoxCast->pop();
+                            if(textBoxCast->onKeyPress == nullptr) {
+                                textBoxCast->defaultKeyPressEvent(c);
                             }else{
-                                if(textBoxCast->getValueLength() < textBoxCast->getMaxLength() && (*(textBoxCast->filter))(c)) {
-                                    textBoxCast->append(c);
-                                }
+                                 (*(textBoxCast->onKeyPress))(c);
                             }
-                            currentItem->draw(true);
+
                         }
                     }
                     

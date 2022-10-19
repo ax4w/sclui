@@ -7,9 +7,11 @@
 
 void initSclui();
 
-bool isText(int c);
+bool TextBoxFilterIsText(int c);
 
-bool isNumber(int c);
+bool TextBoxFilterIsNumber(int c);
+
+bool TextBoxFilterAllowAll(int c);
 
 void doQuit();
 
@@ -31,6 +33,7 @@ public:
     bool isVisible();
     void setVisible(bool v);
     virtual void draw(bool v) = 0;
+    void (*onDraw)();
 protected:
     std::string name = ("");
     int x,y,color, colorFocus;
@@ -51,6 +54,11 @@ private:
     int maxLength;
 public:
     bool(*filter)(int) = nullptr;
+
+    void(*onKeyPress)(int) = nullptr;
+
+    void defaultKeyPressEvent(int c);
+
     TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int));
     virtual void draw(bool v) override;
     virtual std::string getValue() override;
@@ -67,6 +75,8 @@ private:
 public:
     CheckBox(std::string pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
 
+    void(*onCheckBoxChange)() = nullptr;
+
     virtual void draw(bool v) override;
     virtual bool getValue() override;
     void setValue(bool v);
@@ -76,9 +86,9 @@ class Button : public Interactable<void> {
 private:
     
 public:
-    void(*actionEvent)() = nullptr;
+    void(*onButtonPress)() = nullptr;
 
-    Button(std::string pName,int px, int pY,int pColor, int pColorFocus, void(*actionEvent)());
+    Button(std::string pName,int px, int pY,int pColor, int pColorFocus);
 
     virtual void draw(bool v) override;
     virtual void getValue() override;
