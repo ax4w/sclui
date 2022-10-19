@@ -3,11 +3,15 @@
 #include <curses.h>
 
 using namespace sclui;
+
+
 static int cIndex = 2;
+
+//doesnt need to be freed manually, since its not "new"
 static Screen *currentScreen = nullptr;
 
 void doQuit() {
-    currentScreen->free();
+    currentScreen->free(); //free all items
     curs_set(1);
     endwin();
     exit(0);
