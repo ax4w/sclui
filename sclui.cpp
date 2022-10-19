@@ -27,7 +27,7 @@ bool TextBoxFilterIsText(int c) {
     return isalpha(c) || c == ' ';
 }
 
-bool TextBoxFilterIsNumer(int c) {
+bool TextBoxFilterIsNumber(int c) {
     return isdigit(c);
 }
 

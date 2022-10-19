@@ -19,7 +19,7 @@ int main(void) {
     Text *text1 = new Text("Hallo welt",1,3,COLOR_BLANK);
     CheckBox *checkbox1 = new CheckBox("check",1,6,COLOR_CYAN, COLOR_RED,false);
     checkbox1->onCheckBoxChange = &doQuit;
-    textbox1 =  new TextBox("text",1,9,5,COLOR_BLUE, COLOR_GREEN, &TextBoxFilterIsText);
+    textbox1 =  new TextBox("text",1,9,5,COLOR_BLUE, COLOR_GREEN, &TextBoxFilterIsNumber);
     textbox1->onKeyPress = &returnOnV;
     mainScreen.addItem(button1);
     mainScreen.addItem(text1);
