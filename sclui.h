@@ -6,6 +6,7 @@
 #include <assert.h>
 
 namespace sclui {
+    
     void initSclui();
 
     bool TextBoxFilterIsText(int c);
