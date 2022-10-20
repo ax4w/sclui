@@ -16,7 +16,6 @@ namespace sclui {
         exit(0);
     }
 
-
     void initSclui() {
         WINDOW *w = initscr();
         assert(w != NULL);
