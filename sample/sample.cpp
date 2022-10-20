@@ -16,7 +16,7 @@ int main(void) {
     Screen mainScreen("Test",30,15,'-','|'); //no pointer
     
     //pointer, because items from Screen is type BasicItem*
-    Button *button1 = new Button("test",1,1,COLOR_BLUE, COLOR_GREEN);
+    Button *button1 = new Button("test",1,1,11, COLOR_GREEN);
 
     //doQuit will free every item on that screen
     //every screen will be freed when a new screen is loaded
