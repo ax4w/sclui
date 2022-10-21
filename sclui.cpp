@@ -42,7 +42,7 @@ namespace sclui {
         return type;
     }
 
-    bool BasicItem::isVisible() {
+    bool BasicItem::isVisible() const {
         return visible;
     }
     void BasicItem::setVisible(bool v) {
@@ -56,13 +56,13 @@ namespace sclui {
         colorFocus = c;
     }
 
-    std::string BasicItem::getName() {
+    std::string BasicItem::getName() const {
         return name;
     }
-    int BasicItem::getX() {
+    int BasicItem::getX() const {
         return x;
     }
-    int BasicItem::getY() {
+    int BasicItem::getY() const {
         return y;
     }
 
@@ -73,7 +73,7 @@ namespace sclui {
         y = pY;
     }
 
-    bool BasicItem::isInteractable() {
+    bool BasicItem::isInteractable() const {
         return interactable;
     }
     void BasicItem::setInteractable(bool v) {
@@ -224,11 +224,11 @@ namespace sclui {
         this->draw(true);
     }
 
-    int TextBox::getValueLength() {
+    int TextBox::getValueLength() const {
         return value.length();
     }
 
-    int TextBox::getMaxLength() {
+    int TextBox::getMaxLength() const {
         return maxLength;
     }
 
