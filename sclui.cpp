@@ -198,7 +198,7 @@ namespace sclui {
         return nullptr;
     }
 
-    TextBox::TextBox(std::string pName,int pX, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int)) {
+    TextBox::TextBox(std::string pName,int pX, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter) {
         name = pName;
         x = pX;
         y = pY;
@@ -209,6 +209,7 @@ namespace sclui {
         color = pColor;
         colorFocus = pColorFocus;
         filter = pFilter;
+        splitter = pSplitter;
     }
 
     void TextBox::defaultKeyPressEvent(int c) {
@@ -235,7 +236,7 @@ namespace sclui {
         chooseColor(v);
         curs_set(1);
         this->moveTo();
-        printw("[ %s> " , name.c_str()); 
+        printw("[ %s%c" , name.c_str(),splitter); 
         for(int i = 0; i < maxLength; i++) printw(" ");
         printw("]");
         move(y,x+3 + name.length());

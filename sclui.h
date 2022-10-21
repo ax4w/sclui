@@ -54,6 +54,7 @@ namespace sclui {
         private:
             std::string value;
             int maxLength;
+            char splitter;
         public:
             bool(*filter)(int) = nullptr;
 
@@ -61,7 +62,7 @@ namespace sclui {
 
             void defaultKeyPressEvent(int c);
 
-            TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int));
+            TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter);
             virtual void draw(bool v) override;
             virtual std::string getValue() override;
             void setText(std::string s);
