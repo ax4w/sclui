@@ -7,7 +7,7 @@ SCLUI should only be used in terminals, that support colors.
 ## Colors
 ![img](https://i.imgur.com/Cl83t84.png)
 
-To get the color you want, enter the the corresponding number
+*Number = Color*
 
 
 ## Docs
