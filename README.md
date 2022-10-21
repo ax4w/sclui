@@ -67,6 +67,11 @@ Text(std::string pName,int px, int pY,int pColor);
 void (*onDraw)();
 ```
 
+##### onDestruct
+```C++
+void (*onDestruct)();
+```
+
 #### General
 
 ##### getX

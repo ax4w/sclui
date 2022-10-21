@@ -10,7 +10,7 @@ namespace sclui {
     static Screen *currentScreen = nullptr;
 
     void doQuit() {
-        currentScreen->free(); //free all items
+        currentScreen->destroy(); //free all items
         curs_set(1);
         endwin();
         exit(0);
@@ -38,7 +38,7 @@ namespace sclui {
         return true;
     }
 
-    BasicItem::types BasicItem::getType() {
+    BasicItem::types BasicItem::getType() const {
         return type;
     }
 
@@ -402,7 +402,7 @@ namespace sclui {
 
     void Screen::draw() {
         if(currentScreen != nullptr) {
-            currentScreen->free();
+            currentScreen->destroy();
         }
         currentScreen = this;
         clear();
@@ -446,8 +446,10 @@ namespace sclui {
         return items.at(index);
     }
 
-    void Screen::free() {
+    void Screen::destroy() {
         for(auto &i : items) {
+            if(i->onDestruct != nullptr)
+                (*(i->onDestruct))();
             delete i;
         }
     }

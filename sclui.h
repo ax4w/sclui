@@ -21,7 +21,7 @@ namespace sclui {
         public:
             typedef enum {BASIC,BUTTON,CHECKBOX,TEXTBOX} types; 
             int itemIndex;
-            types getType();
+            types getType() const;
             std::string getName() const;
             int getX() const;
             int getY() const;
@@ -35,7 +35,8 @@ namespace sclui {
             bool isVisible() const;
             void setVisible(bool v);
             virtual void draw(bool v) = 0;
-            void (*onDraw)();
+            void (*onDraw)() = nullptr;
+            void (*onDestruct)() = nullptr;
         protected:
             std::string name = ("");
             int x,y,color, colorFocus;
@@ -128,7 +129,7 @@ namespace sclui {
 
             BasicItem *getItemAt(int index);
 
-            void free();
+            void destroy();
             void draw();
             void update();
         };
