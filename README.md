@@ -35,9 +35,9 @@ Screen(std::string pTitle, int pWidth, int pHeight, char pHFrame, char pVFrame);
 void addItem(BasicItem *i)
 ```
 
-#### Add Subscreen to Screen
+##### Add SubScreen to Screen
 ```C++
-void addSubscreen(Screen *n)
+void addSubScreen(Screen *n)
 ```
 
 ##### Center Item

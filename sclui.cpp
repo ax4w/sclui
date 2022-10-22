@@ -474,7 +474,11 @@ namespace sclui {
     BasicItem *Screen::getItemAt(int index) {
         return items.at(index);
     }
-    void Screen::addSubscreen(Screen *i) {
+
+    Screen *Screen::getSubScreenAt(int index) {
+        return subScreens.at(index);
+    }
+    void Screen::addSubScreen(Screen *i) {
         i->motherScreen = this;
         subScreens.push_back(i);
     }

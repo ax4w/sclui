@@ -129,7 +129,7 @@ namespace sclui {
             void(*onUnFocus)();
 
             void addItem(BasicItem *i);
-            void addSubscreen(Screen *i);
+            void addSubScreen(Screen *i);
             void setTitle(std::string s);
 
             BasicItem *getItemByName(const char *name);
@@ -139,6 +139,7 @@ namespace sclui {
             void centerItem(Screen::axis pAxis, BasicItem *i);
 
             BasicItem *getItemAt(int index);
+            Screen *getSubScreenAt(int index);
 
             void destroy();
             void draw();
