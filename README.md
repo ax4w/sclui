@@ -14,6 +14,11 @@ SCLUI should only be used in terminals, that support colors.
 
 **For some examples, check out the [samples](https://github.com/0x3alex/sclui/tree/main/sample) or [SimplMath](https://github.com/0x3alex/SimplMath)**
 
+**Note for using SubScreens - Currently subscreens can't contain subscreens**
+**Examples**
+**Screen->SubScreen [OK]**
+**Screen->SubScreen->SubScreen [NOT OK]**
+
 ### Setup
 Simply call:
 ```C++
