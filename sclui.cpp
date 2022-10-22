@@ -2,8 +2,10 @@
 #include <cstring>
 #include <curses.h>
 
-namespace sclui {
 
+namespace sclui {
+    #define TAB_KEY '\t'
+    #define CONFIRM_KEY ' '
     static int cIndex = 2;
 
     //doesnt need to be freed manually, since its not "new"
@@ -80,7 +82,7 @@ namespace sclui {
         interactable = v;
     }
     void BasicItem::moveTo() {
-        move(y,x);
+        move(currentScreen->getY() + y,currentScreen->getX() + x);
     }
 
     void BasicItem::chooseColor(bool b) {
@@ -161,12 +163,15 @@ namespace sclui {
     }
 
     //screen
-    Screen::Screen(std::string pTitle,int pWidth, int pHeight, char pHFrame, char pVFrame) {
+    Screen::Screen(std::string pTitle,int pWidth, int pHeight, char pHFrame, char pVFrame, int pX, int pY) {
         width = pWidth;
         height = pHeight;
         hFrame = pHFrame;
         vFrame = pVFrame;
         title = pTitle;
+        subScreenIndex = 0;
+        x = pX;
+        y = pY;
     }
 
 
@@ -239,7 +244,7 @@ namespace sclui {
         printw("[ %s%c" , name.c_str(),splitter); 
         for(int i = 0; i < maxLength; i++) printw(" ");
         printw("]");
-        move(y,x+3 + name.length());
+        move(currentScreen->getY()+ y, currentScreen->getX() + x+3 + name.length());
         printw("%s",value.c_str());
     }
 
@@ -258,7 +263,7 @@ namespace sclui {
     }
 
     void Screen::drawFrame() {
-        move(0,0);
+        move(getY(),getX());
         init_pair(1,COLOR_BLACK,COLOR_WHITE);
         attron(COLOR_PAIR(1));
         for(int i = 0; i <= width; i++) {
@@ -268,16 +273,16 @@ namespace sclui {
                 i += title.length();
             }
         }
-        move(height,0);
+        move(getY()+height,getX());
         for(int i = 0; i <= width; i++) {
             printw("%c",hFrame);
         }
         for(int i = 0; i <= height; i++) {
-            move(i,0);
+            move(getY() + i, getX());
             printw("%c",vFrame);
         }
         for(int i = 0; i <= height; i++) {
-            move(i,width);
+            move(getY() + i, getX() + width);
             printw("%c",vFrame);
         }
         attroff(COLOR_PAIR(1));
@@ -341,17 +346,30 @@ namespace sclui {
         CheckBox *checkBoxCast = nullptr;
         Button *buttonCast = nullptr;
         TextBox *textBoxCast = nullptr;
+       
         int c;
         for(;;) {
             c = getch();
             switch(c) {
-                case KEY_UP:
+                case TAB_KEY:
+                    if(currentScreen->motherScreen != nullptr) {
+                        if(currentScreen->motherScreen->subScreenIndex == currentScreen->motherScreen->subScreens.size()-1) {
+                            currentScreen->motherScreen->subScreenIndex = 0;
+                        }else{
+                            currentScreen->motherScreen->subScreenIndex++;
+                            
+                        }
+                        if(currentScreen->onUnFocus != nullptr) (*(currentScreen->onUnFocus))();
+                            currentScreen->motherScreen->update();
+                    }
+                    break;
+                case KEY_UP: //arrow up
                     doMove(1);
                     break;
-                case KEY_DOWN:
+                case KEY_DOWN: //arrow down
                     doMove(0);
                     break;
-                case ' ':
+                case CONFIRM_KEY:
                     switch(currentItem->getType()) {
                         case BasicItem::CHECKBOX:
                             checkBoxCast = (CheckBox*) currentItem;
@@ -368,7 +386,8 @@ namespace sclui {
                                 (*(buttonCast->onButtonPress))();
                             break;
                         case BasicItem::TEXTBOX:
-                            goto textBoxHandler;
+                            if (c == ' ')
+                                goto textBoxHandler;
                             break;
                     }
                     if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
@@ -395,20 +414,30 @@ namespace sclui {
     }
 
     void Screen::update() {
-        clear();
-        drawFrame();
-        drawItems();
+        this->draw();   
     }
 
     void Screen::draw() {
-        if(currentScreen != nullptr) {
-            currentScreen->destroy();
-        }
-        currentScreen = this;
         clear();
-        drawFrame();
-        drawItems();
-        run();
+        if(subScreens.size() > 0) {
+            for(auto &n : subScreens) {
+                currentScreen = n;
+                if(n->border) 
+                    n->drawFrame();
+                n->drawItems();
+            }
+            currentScreen = subScreens.at(this->subScreenIndex);
+            currentScreen->run();
+        }else{
+            currentScreen = this;
+            if(this->border)
+                drawFrame();
+            drawItems();
+            run();
+        }
+        if(currentScreen->onFocus != nullptr) (*(currentScreen->onFocus))();
+        
+        
     }
 
     void Screen::centerItem(Screen::axis pAxis, BasicItem *i) {
@@ -445,12 +474,68 @@ namespace sclui {
     BasicItem *Screen::getItemAt(int index) {
         return items.at(index);
     }
+    void Screen::addSubscreen(Screen *i) {
+        i->motherScreen = this;
+        subScreens.push_back(i);
+    }
 
-    void Screen::destroy() {
-        for(auto &i : items) {
-            if(i->onDestruct != nullptr)
-                (*(i->onDestruct))();
-            delete i;
+    void Screen::destroyHelper(Screen *n) {
+        if(n->items.size() > 0) {
+            for(auto &i : n->items) {
+                if(i->onDestruct != nullptr)
+                    (*(i->onDestruct))();
+                delete i;
+            }
         }
+        if(n->subScreens.size() > 0) {
+            for(auto &i : n->subScreens) {
+                if(i->onDestruct != nullptr)
+                    (*(i->onDestruct))();
+                delete i;
+            }
+        }
+    }
+    void Screen::destroy() {
+        if(this->motherScreen != nullptr) {
+            for(auto &n : this->motherScreen->subScreens) {
+                destroyHelper(n);
+            }
+        }else{
+            destroyHelper(this);
+        } 
+    }
+
+    void Screen::setTitle(std::string s) {
+        title = s;
+    }
+
+    int Screen::getWith() const {
+        return width;
+    }
+    int Screen::getHeight() const {
+        return height;
+    }
+    int Screen::getX() const {
+        return x;
+    }
+    int Screen::getY() const {
+        return y;
+    }
+
+    void Screen::setWith(int v) {
+        width = v;
+    }
+    void Screen::setHeight(int v) {
+        height = v;
+    }
+    void Screen::setX(int v) {
+        x = v;
+    }
+    void Screen::setY(int v) {
+        y = v;
+    }
+
+    void Screen::setBorder(bool v) {
+        border = v;
     }
 }

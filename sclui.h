@@ -106,20 +106,31 @@ namespace sclui {
     class Screen {
         private:
             std::string title;
-            int width, height,vecIndex;
+            bool border = true;
+            int x,y,width, height,vecIndex,subScreenIndex;
             BasicItem *currentItem;
             std::vector<BasicItem *> items = {};
+            std::vector<Screen *> subScreens = {};
+            Screen *motherScreen = nullptr;
             char hFrame, vFrame;
+            void run();
             void drawFrame();
             void drawItems();
-            void run();
+            void destroyHelper(Screen *n);
             void doMove(int mov);
             bool selectNext(BasicItem *i);
             BasicItem *getFirstInteractableItem();
         
         public:
-            Screen(std::string pTitle, int pWidth, int pHeight, char pHFrame, char pVFrame);
+            Screen(std::string pTitle, int pWidth, int pHeight, char pHFrame, char pVFrame, int pX, int pY);
+            
+            void(*onDestruct)();
+            void(*onFocus)();
+            void(*onUnFocus)();
+
             void addItem(BasicItem *i);
+            void addSubscreen(Screen *i);
+            void setTitle(std::string s);
 
             BasicItem *getItemByName(const char *name);
 
@@ -132,6 +143,18 @@ namespace sclui {
             void destroy();
             void draw();
             void update();
+            
+            int getWith() const;
+            int getHeight() const;
+            int getX() const;
+            int getY() const;
+
+            void setWith(int v);
+            void setHeight(int v);
+            void setX(int v);
+            void setY(int v);
+
+            void setBorder(bool v);
         };
 
 }

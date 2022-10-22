@@ -12,6 +12,8 @@ SCLUI should only be used in terminals, that support colors.
 
 ## Docs
 
+**For some examples, check out the [samples](https://github.com/0x3alex/sclui/tree/main/sample) or [SimplMath](https://github.com/0x3alex/SimplMath)**
+
 ### Setup
 Simply call:
 ```C++
@@ -33,6 +35,11 @@ Screen(std::string pTitle, int pWidth, int pHeight, char pHFrame, char pVFrame);
 void addItem(BasicItem *i)
 ```
 
+#### Add Subscreen to Screen
+```C++
+void addSubscreen(Screen *n)
+```
+
 ##### Center Item
 
 ```C++
@@ -51,6 +58,50 @@ void draw();
 ##### update
 ```C++
 void update();
+```
+# GetWith
+```C++
+int getWith() const;
+```
+
+# GetHeight
+```C++
+int getHeight() const;
+```
+
+# getX
+```C++
+int getX() const;
+```
+
+# getY
+```C++
+int getY() const;
+```
+
+# setWidth
+```C++
+void setWith(int v);
+```
+
+# setHeight
+```C++
+void setHeight(int v);
+```
+
+# setX
+```C++
+void setX(int v);
+```
+
+# setY
+```C++
+void setY(int v);
+```
+
+# setBorder
+```C++
+void setBorder(bool v);
 ```
 
 ### Class : BasicItem
