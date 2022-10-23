@@ -22,6 +22,23 @@ SCLUI should only be used in terminals, that support colors.
 
 **Screen->SubScreen->SubScreen [NOT OK]**
 
+### Default Keys
+#### Switch between subscreens
+<kbd>TAB</kbd>
+
+#### Toggle Drag
+<kbd>#</kbd>
+
+#### Move Dragging window
+<kbd>ARROW KEY UP</kbd>, 
+<kbd>ARROW KEY DOWN</kbd>, 
+<kbd>ARROW KEY LEFT</kbd>, 
+<kbd>ARROW KEY RIGHT</kbd>
+
+#### Go through items
+<kbd>ARROW KEY UP</kbd>, 
+<kbd>ARROW KEY DOWN</kbd>, 
+
 ### Setup
 Simply call:
 ```C++
