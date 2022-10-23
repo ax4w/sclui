@@ -36,6 +36,38 @@ initSclui();
 Screen(std::string pTitle, int pWidth, int pHeight, char pHFrame, char pVFrame);
 ```
 
+#### Events
+
+##### onDestruct
+```C++
+void(*onDestruct)();
+```
+
+##### onFocus
+```C++
+void(*onFocus)();
+```
+
+##### onUnFocus
+```C++
+void(*onUnFocus)();
+```
+
+##### onDragBegin
+```C++
+void(*onDragBegin)();
+```
+
+##### onDrag
+```C++
+void(*onDrag)();
+```
+
+##### onDrop
+```C++
+void(*onDrop)();
+```
+
 #### General
 ##### Add Items to Screen
 

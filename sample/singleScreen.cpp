@@ -13,7 +13,7 @@ void returnOnV(int c) {
 
 int main(void) {
     initSclui();
-    Screen mainScreen("Test",30,15,'-','|',0,0); //no pointer
+    Screen mainScreen("Test",30,15,0,0); //no pointer
     
     //pointer, because items from Screen is type BasicItem*
     Button *button1 = new Button("test",1,1,11, COLOR_GREEN);

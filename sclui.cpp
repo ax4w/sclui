@@ -4,9 +4,18 @@
 
 
 namespace sclui {
-    #define TAB_KEY '\t'
-    #define CONFIRM_KEY ' '
+    #define SWITCH_KEY '\t'
+    #define CONFIRM_KEY '\n'
+    #define DRAG_KEY '#'
+    #define UP_KEY KEY_UP
+    #define DOWN_KEY KEY_DOWN
+    #define H_FRAME '-'
+    #define V_FRAME '|'
+    #define H_FRAME_FOCUS '='
+    #define H_FRAME_DRAG '+'
+
     static int cIndex = 2;
+    static bool dragging = false;
 
     //doesnt need to be freed manually, since its not "new"
     static Screen *currentScreen = nullptr;
@@ -163,11 +172,9 @@ namespace sclui {
     }
 
     //screen
-    Screen::Screen(std::string pTitle,int pWidth, int pHeight, char pHFrame, char pVFrame, int pX, int pY) {
+    Screen::Screen(std::string pTitle,int pWidth, int pHeight, int pX, int pY) {
         width = pWidth;
         height = pHeight;
-        hFrame = pHFrame;
-        vFrame = pVFrame;
         title = pTitle;
         subScreenIndex = 0;
         x = pX;
@@ -262,12 +269,29 @@ namespace sclui {
         value = s;
     }
 
-    void Screen::drawFrame() {
+    char getHFrame(int v) {
+        /*
+            v = 0 is normal
+            v = 1 is focus
+            v = 2 is drag
+        */
+        if(v == 0) {
+            return H_FRAME;
+        }else if (v == 1)
+        {
+            return H_FRAME_FOCUS;
+        }else{
+            return H_FRAME_DRAG;
+        }
+        
+    }
+
+    void Screen::drawFrame(int v) {
         move(getY(),getX());
         init_pair(1,COLOR_BLACK,COLOR_WHITE);
         attron(COLOR_PAIR(1));
         for(int i = 0; i <= width; i++) {
-            printw("%c",hFrame);
+            printw("%c",getHFrame(v));
             if(i == 2) {
                 addstr(title.c_str());
                 i += title.length();
@@ -275,15 +299,15 @@ namespace sclui {
         }
         move(getY()+height,getX());
         for(int i = 0; i <= width; i++) {
-            printw("%c",hFrame);
+            printw("%c",getHFrame(v));
         }
         for(int i = 0; i <= height; i++) {
             move(getY() + i, getX());
-            printw("%c",vFrame);
+            printw("%c",V_FRAME);
         }
         for(int i = 0; i <= height; i++) {
             move(getY() + i, getX() + width);
-            printw("%c",vFrame);
+            printw("%c",V_FRAME);
         }
         attroff(COLOR_PAIR(1));
     }
@@ -338,6 +362,41 @@ namespace sclui {
         
     }
 
+    Screen *Screen::getMotherScreen() const {
+        return motherScreen;
+    }
+
+    void drag(int c) {
+        int fullX = currentScreen->getX() + currentScreen->getWith();
+        int fullY = currentScreen->getY() + currentScreen->getHeight();
+        int x = currentScreen->getX();
+        int y = currentScreen->getY();
+        Screen *m = currentScreen->getMotherScreen();
+        switch(c) {
+            case KEY_RIGHT:
+                if(fullX+1 < m->getWith()) {
+                    currentScreen->setX(x+1);
+                }
+                break;
+            case KEY_LEFT:
+                if(x-1 >= 0) {
+                    currentScreen->setX(x-1);
+                }
+                break;
+            case KEY_UP:
+                if(y-1 >= 0) {
+                    currentScreen->setY(y-1);
+                }
+                break;
+            case KEY_DOWN:
+                if(fullY+1 < m->getHeight()) {
+                    currentScreen->setY(y+1);
+                }
+                break;
+        }
+        m->update(); //just update
+        
+    }
     void Screen::run() {
         if(currentItem != NULL) {
             if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
@@ -351,8 +410,24 @@ namespace sclui {
         for(;;) {
             c = getch();
             switch(c) {
-                case TAB_KEY:
+                case DRAG_KEY:
+                    //all drag and drop only when subscreen
                     if(currentScreen->motherScreen != nullptr) {
+                        dragging = true;
+                        currentScreen->motherScreen->update();
+                        if(currentScreen->onDragBegin != nullptr) (*(currentScreen->onDragBegin))();
+                        while((c=getch()) != '#') {
+                            if(currentScreen->onDrag != nullptr) (*(currentScreen->onDrag))();
+                            drag(c);
+                        }
+                        dragging = false;
+                         if(currentScreen->onDrop != nullptr) (*(currentScreen->onDrop))();
+                        currentScreen->motherScreen->draw(); //redraw all after dragging is done
+                    }
+                    break;
+                case SWITCH_KEY:
+                    //allow switching only when subscreen
+                    if(currentScreen->motherScreen != nullptr && currentScreen->motherScreen->subScreens.size() > 1) {
                         if(currentScreen->motherScreen->subScreenIndex == currentScreen->motherScreen->subScreens.size()-1) {
                             currentScreen->motherScreen->subScreenIndex = 0;
                         }else{
@@ -360,13 +435,13 @@ namespace sclui {
                             
                         }
                         if(currentScreen->onUnFocus != nullptr) (*(currentScreen->onUnFocus))();
-                            currentScreen->motherScreen->update();
+                        currentScreen->motherScreen->draw(); //redraw all
                     }
                     break;
-                case KEY_UP: //arrow up
+                case UP_KEY: //arrow up
                     doMove(1);
                     break;
-                case KEY_DOWN: //arrow down
+                case DOWN_KEY: //arrow down
                     doMove(0);
                     break;
                 case CONFIRM_KEY:
@@ -414,7 +489,28 @@ namespace sclui {
     }
 
     void Screen::update() {
-        this->draw();   
+        clear();
+        if(subScreens.size() > 0) {
+            for(auto &n : subScreens) {
+                currentScreen = n;
+                if(currentScreen->border) currentScreen->drawFrame(0);
+                currentScreen->drawItems();
+            }
+            currentScreen = subScreens.at(this->subScreenIndex);
+            currentScreen->drawFrame(dragging ? 2 : 1); //drag frame
+            currentItem = currentScreen->getFirstInteractableItem();
+            if(currentItem != NULL) {
+                if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
+                currentItem->draw(true);
+            }
+        }else{
+            currentScreen = this;
+            if(this->border) drawFrame(1);
+            drawItems();
+        }
+        if(currentScreen->onFocus != nullptr) (*(currentScreen->onFocus))();
+        refresh();
+        
     }
 
     void Screen::draw() {
@@ -422,16 +518,16 @@ namespace sclui {
         if(subScreens.size() > 0) {
             for(auto &n : subScreens) {
                 currentScreen = n;
-                if(n->border) 
-                    n->drawFrame();
-                n->drawItems();
+                if(currentScreen->border) currentScreen->drawFrame(0);
+                currentScreen->drawItems();
             }
             currentScreen = subScreens.at(this->subScreenIndex);
+            currentScreen->drawFrame(1);
+            currentItem = currentScreen->getFirstInteractableItem();
             currentScreen->run();
         }else{
             currentScreen = this;
-            if(this->border)
-                drawFrame();
+            if(this->border) drawFrame(1);
             drawItems();
             run();
         }
