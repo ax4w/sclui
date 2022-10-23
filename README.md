@@ -116,47 +116,47 @@ void draw();
 ```C++
 void update();
 ```
-# GetWith
+##### GetWith
 ```C++
 int getWith() const;
 ```
 
-# GetHeight
+##### GetHeight
 ```C++
 int getHeight() const;
 ```
 
-# getX
+##### getX
 ```C++
 int getX() const;
 ```
 
-# getY
+##### getY
 ```C++
 int getY() const;
 ```
 
-# setWidth
+##### setWidth
 ```C++
 void setWith(int v);
 ```
 
-# setHeight
+##### setHeight
 ```C++
 void setHeight(int v);
 ```
 
-# setX
+##### setX
 ```C++
 void setX(int v);
 ```
 
-# setY
+##### setY
 ```C++
 void setY(int v);
 ```
 
-# setBorder
+##### setBorder
 ```C++
 void setBorder(bool v);
 ```
