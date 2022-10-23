@@ -21,7 +21,6 @@ namespace sclui {
     static Screen *currentScreen = nullptr;
 
     void doQuit() {
-        currentScreen->destroy(); //free all items
         curs_set(1);
         endwin();
         exit(0);
@@ -577,32 +576,6 @@ namespace sclui {
     void Screen::addSubScreen(Screen *i) {
         i->motherScreen = this;
         subScreens.push_back(i);
-    }
-
-    void Screen::destroyHelper(Screen *n) {
-        if(n->items.size() > 0) {
-            for(auto &i : n->items) {
-                if(i->onDestruct != nullptr)
-                    (*(i->onDestruct))();
-                delete i;
-            }
-        }
-        if(n->subScreens.size() > 0) {
-            for(auto &i : n->subScreens) {
-                if(i->onDestruct != nullptr)
-                    (*(i->onDestruct))();
-                delete i;
-            }
-        }
-    }
-    void Screen::destroy() {
-        if(this->motherScreen != nullptr) {
-            for(auto &n : this->motherScreen->subScreens) {
-                destroyHelper(n);
-            }
-        }else{
-            destroyHelper(this);
-        } 
     }
 
     void Screen::setTitle(std::string s) {

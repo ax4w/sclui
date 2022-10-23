@@ -144,7 +144,6 @@ namespace sclui {
             BasicItem *getItemAt(int index);
             Screen *getSubScreenAt(int index);
 
-            void destroy();
             void draw();
             void update();
             
