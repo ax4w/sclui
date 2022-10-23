@@ -296,6 +296,11 @@ void append(char c);
 void pop();
 ```
 
+##### getValue
+```C++
+T getValue()
+```
+
 #### CheckBox
 ##### Create
 
