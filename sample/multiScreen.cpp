@@ -28,10 +28,8 @@ void switchScreen() {
 
 int main(void) {
     initSclui();
-    
-    Screen mainScreen = Screen("",100,30,0,0);
+    Screen mainScreen = Screen("",getMaxX(),getMaxY(),0,0);
     mainScreen.setBorder(false);
-
     subScreen1 = new Screen("S1",20,10,0,0);
     Text text1 = Text("Hallo\nwelt",1,1,COLOR_BLANK);
     Button b1 = Button("quit",2,4,COLOR_WHITE,COLOR_RED);

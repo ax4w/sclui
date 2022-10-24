@@ -52,6 +52,14 @@ namespace sclui {
         exit(0);
     }
 
+    int getMaxX() {
+        return getmaxx(stdscr);
+    }
+    int getMaxY() {
+        return getmaxy(stdscr);
+    }
+
+
     void initSclui() {
         WINDOW *w = initscr();
         assert(w != NULL);

@@ -17,6 +17,10 @@ namespace sclui {
 
     void doQuit();
 
+
+    int getMaxX();
+    int getMaxY();
+    
     class BasicItem {
         public:
             typedef enum {BASIC,BUTTON,CHECKBOX,TEXTBOX} types; 
