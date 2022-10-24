@@ -2,9 +2,6 @@
 
 using namespace sclui;
 
-Screen mainScreen = Screen("",100,100,0,0);
-Screen newScreen = Screen("hallo",20,10,0,0);
-
 //needs to be pointer
 Screen *subScreen1 = nullptr;
 Screen *subScreen2 = nullptr;
@@ -23,7 +20,7 @@ void switchScreen() {
     CheckBox c1 = CheckBox("Test",1,4,COLOR_WHITE,COLOR_BLUE,false);
 
     b3.onButtonPress = &doQuit;
-    
+    Screen newScreen = Screen("hallo",20,10,0,0);
     newScreen.addItem(&b3);
     newScreen.addItem(&c1);
     newScreen.draw();
@@ -32,11 +29,14 @@ void switchScreen() {
 int main(void) {
     initSclui();
     
+    Screen mainScreen = Screen("",100,30,0,0);
     mainScreen.setBorder(false);
 
     subScreen1 = new Screen("S1",20,10,0,0);
+    Text text1 = Text("Hallo\nwelt",1,1,COLOR_BLANK);
     Button b1 = Button("quit",2,4,COLOR_WHITE,COLOR_RED);
     b1.onButtonPress = &doQuit;
+    subScreen1->addItem(&text1);
     subScreen1->addItem(&b1);
 
     

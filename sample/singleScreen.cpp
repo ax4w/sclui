@@ -21,7 +21,7 @@ int main(void) {
     //doQuit will free every item on that screen
     //every screen will be freed when a new screen is loaded
     button1.onButtonPress = &doQuit; //register press event(
-    Text text1 = Text("Hallo welt",1,3,COLOR_BLANK);
+    Text text1 = Text("Hallo\nwelt",1,3,COLOR_BLANK);
     CheckBox checkbox1 = CheckBox("check",1,6,COLOR_CYAN, COLOR_RED,false);
     checkbox1.onCheckBoxChange = &doQuit; //register checkbox change event
 

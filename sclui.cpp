@@ -4,15 +4,41 @@
 
 
 namespace sclui {
+    #ifndef SWITCH_KEY
     #define SWITCH_KEY '\t'
+    #endif
+
+    #ifndef CONFIRM_KEY
     #define CONFIRM_KEY '\n'
+    #endif
+
+    #ifndef DRAG_KEY
     #define DRAG_KEY '#'
+    #endif
+
+    #ifndef UP_KEY
     #define UP_KEY KEY_UP
+    #endif
+
+    #ifndef DOWN_KEY
     #define DOWN_KEY KEY_DOWN
+    #endif
+
+    #ifndef H_FRAME
     #define H_FRAME '-'
+    #endif
+
+    #ifndef V_FRAME
     #define V_FRAME '|'
+    #endif
+
+    #ifndef H_FRAME_FOCUS
     #define H_FRAME_FOCUS '='
+    #endif
+
+    #ifndef H_FRAME_DRAG
     #define H_FRAME_DRAG '+'
+    #endif
 
     static int cIndex = 2;
     static bool dragging = false;
@@ -163,10 +189,19 @@ namespace sclui {
 
     }
     void Text::draw(bool v) {
+        int oldY = this->getY();
         chooseColor(v);
         curs_set(0);
         this->moveTo();
-        printw("%s", name.c_str());
+        for(char n : name) {
+            if(n == '\n') {
+                this->setY(this->getY() + 1);
+                this->moveTo();
+                continue;
+            }
+            printw("%c",n);
+        }
+        this->setY(oldY);
         this->moveTo();
     }
 
