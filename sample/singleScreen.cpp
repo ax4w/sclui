@@ -3,6 +3,7 @@
 using namespace sclui;
 //global scope to access it in extOnV
 static TextBox textbox1 = TextBox("text",1,9,5,COLOR_BLUE, COLOR_GREEN, &TextBoxFilterIsNumber,'|');
+static Screen mainScreen = Screen("Test",30,15,0,0); //no pointer
 
 void returnOnV(int c) {
     if(c == 'v') return;
@@ -11,16 +12,25 @@ void returnOnV(int c) {
     
 }
 
+void test() {
+    mainScreen.setTitle("world!");
+    mainScreen.setX(5);
+    mainScreen.setY(5);
+    mainScreen.setWith(35);
+    mainScreen.setHeight(20);
+    mainScreen.update();
+}
+
 int main(void) {
     initSclui();
-    Screen mainScreen = Screen("Test",30,15,0,0); //no pointer
+    
     
     //pointer, because items from Screen is type BasicItem*
     Button button1 = Button("test",1,1,11, COLOR_GREEN);
 
     //doQuit will free every item on that screen
     //every screen will be freed when a new screen is loaded
-    button1.onButtonPress = &doQuit; //register press event(
+    button1.onButtonPress = &test; //register press event(
     Text text1 = Text("Hallo\nwelt",1,3,COLOR_BLANK);
     CheckBox checkbox1 = CheckBox("check",1,6,COLOR_CYAN, COLOR_RED,false);
     checkbox1.onCheckBoxChange = &doQuit; //register checkbox change event
