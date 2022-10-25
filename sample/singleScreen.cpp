@@ -1,4 +1,4 @@
-#include "sclui.h"
+#include "sclui.hpp"
 
 using namespace sclui;
 //global scope to access it in extOnV

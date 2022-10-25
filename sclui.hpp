@@ -17,7 +17,6 @@ namespace sclui {
 
     void doQuit();
 
-
     int getMaxX();
     int getMaxY();
     
@@ -110,7 +109,7 @@ namespace sclui {
     class Screen {
         private:
             std::string title;
-            bool border = true;
+            bool border = true, isDragging = false,isFocused = false;
             int x,y,width, height,vecIndex,subScreenIndex;
             BasicItem *currentItem;
             std::vector<BasicItem *> items = {};
@@ -123,6 +122,9 @@ namespace sclui {
             void doMove(int mov);
             bool selectNext(BasicItem *i);
             BasicItem *getFirstInteractableItem();
+            void handleDrag(int c);
+            void switchFocus();
+            void moveHelper(int i);
         
         public:
             Screen(std::string pTitle, int pWidth, int pHeight, int pX, int pY);

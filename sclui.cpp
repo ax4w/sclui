@@ -1,4 +1,4 @@
-#include "sclui.h"
+#include "sclui.hpp"
 #include <cstring>
 #include <curses.h>
 
@@ -41,7 +41,6 @@ namespace sclui {
     #endif
 
     static int cIndex = 2;
-    static bool dragging = false;
 
     //doesnt need to be freed manually, since its not "new"
     static Screen *currentScreen = nullptr;
@@ -120,9 +119,11 @@ namespace sclui {
     bool BasicItem::isInteractable() const {
         return interactable;
     }
+    
     void BasicItem::setInteractable(bool v) {
         interactable = v;
     }
+
     void BasicItem::moveTo() {
         move(currentScreen->getY() + y,currentScreen->getX() + x);
     }
@@ -135,7 +136,8 @@ namespace sclui {
     }
 
 
-    Button::Button(std::string pName, int pX, int pY, int pColor, int pColorFocus) {
+    Button::Button(std::string pName, int pX, int pY, 
+    int pColor, int pColorFocus) {
         name = pName;
         type = BUTTON;
         color = pColor;
@@ -158,7 +160,8 @@ namespace sclui {
         return;
     }
 
-    CheckBox::CheckBox(std::string pName,int pX, int pY,int pColor, int pColorFocus, bool defaultValue) {
+    CheckBox::CheckBox(std::string pName,int pX, int pY,int pColor, 
+    int pColorFocus, bool defaultValue) {
         name = pName;
         x = pX;
         y = pY;
@@ -252,7 +255,8 @@ namespace sclui {
         return nullptr;
     }
 
-    TextBox::TextBox(std::string pName,int pX, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter) {
+    TextBox::TextBox(std::string pName,int pX, int pY, int pMaxLength,int pColor, 
+    int pColorFocus, bool(*pFilter)(int), char pSplitter) {
         name = pName;
         x = pX;
         y = pY;
@@ -361,28 +365,27 @@ namespace sclui {
         return true;
     }
 
+    void Screen::moveHelper(int i) {
+        if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
+        currentItem->draw(false);
+        vecIndex = i;
+        currentItem = items.at(i);
+        if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
+        currentItem->draw(true);
+    }
+
     void Screen::doMove(int mov) {
         if(mov == 0)  { //down
             for(int i = vecIndex+1; i < items.size(); i++) {
                 if(selectNext(items.at(i))) {
-                    if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
-                    currentItem->draw(false);
-                    vecIndex = i;
-                    currentItem = items.at(i);
-                    if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
-                    currentItem->draw(true);
+                    moveHelper(i);
                     return;
                 }
             }
         }else{ //up
             for(int i = vecIndex-1; i >= 0; i--) {
                 if(selectNext(items.at(i))) {
-                    if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
-                    currentItem->draw(false);
-                    vecIndex = i;
-                    currentItem = items.at(i);
-                    if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
-                    currentItem->draw(true);
+                    moveHelper(i);
                     return;
                 }
             } 
@@ -407,6 +410,7 @@ namespace sclui {
     Screen *Screen::getMotherScreen() const {
         return motherScreen;
     }
+
 
     void drag(int c) {
         int fullX = currentScreen->getX() + currentScreen->getWith();
@@ -439,73 +443,82 @@ namespace sclui {
         m->update(); //just update
         
     }
-    void Screen::run() {
-        if(currentItem != NULL) {
-            if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
-            currentItem->draw(true);
+
+    void Screen::handleDrag(int c) {
+        if(currentScreen->getMotherScreen() != nullptr) {
+            currentScreen->isDragging = true;
+
+            /*
+                *Fire on Drag begin event
+            */
+            if(currentScreen->onDragBegin != nullptr) (*(currentScreen->onDragBegin))();
+            do{
+                /*
+                    Fire on Drag event
+                */
+                if(currentScreen->onDrag != nullptr) (*(currentScreen->onDrag))();
+                drag(c);
+            }while((c=getch()) != '#');
+            currentScreen->isDragging = false;
+
+            /*
+                *Fire on Drop Event
+            */
+            if(currentScreen->onDrop != nullptr) (*(currentScreen->onDrop))();
+            currentScreen->motherScreen->draw(); //redraw all after dragging is done
+        } 
+    }
+
+    void Screen::switchFocus() {
+        if(currentScreen->motherScreen->subScreenIndex 
+        == currentScreen->motherScreen->subScreens.size()-1) {
+            currentScreen->motherScreen->subScreenIndex = 0;
+
+        }else{
+            currentScreen->motherScreen->subScreenIndex++;
         }
-        CheckBox *checkBoxCast = nullptr;
-        Button *buttonCast = nullptr;
-        TextBox *textBoxCast = nullptr;
-       
+        //redraw to ensure that item interactions are working correctly
+        currentScreen->motherScreen->draw();
+    }
+    void Screen::run() {
         int c;
         for(;;) {
             c = getch();
             switch(c) {
                 case DRAG_KEY:
-                    //all drag and drop only when subscreen
-                    if(currentScreen->motherScreen != nullptr) {
-                        dragging = true;
-                        currentScreen->motherScreen->update();
-                        if(currentScreen->onDragBegin != nullptr) (*(currentScreen->onDragBegin))();
-                        while((c=getch()) != '#') {
-                            if(currentScreen->onDrag != nullptr) (*(currentScreen->onDrag))();
-                            drag(c);
-                        }
-                        dragging = false;
-                         if(currentScreen->onDrop != nullptr) (*(currentScreen->onDrop))();
-                        currentScreen->motherScreen->draw(); //redraw all after dragging is done
-                    }
+                    handleDrag(c);
                     break;
                 case SWITCH_KEY:
                     //allow switching only when subscreen
-                    if(currentScreen->motherScreen != nullptr && currentScreen->motherScreen->subScreens.size() > 1) {
-                        if(currentScreen->motherScreen->subScreenIndex == currentScreen->motherScreen->subScreens.size()-1) {
-                            currentScreen->motherScreen->subScreenIndex = 0;
-                        }else{
-                            currentScreen->motherScreen->subScreenIndex++;
-                            
-                        }
-                        if(currentScreen->onUnFocus != nullptr) (*(currentScreen->onUnFocus))();
-                        currentScreen->motherScreen->draw(); //redraw all
+                    if( currentScreen->motherScreen != nullptr 
+                    &&  currentScreen->motherScreen->subScreens.size() > 1) {
+                        switchFocus();
                     }
                     break;
-                case UP_KEY: //arrow up
-                    doMove(1);
-                    break;
-                case DOWN_KEY: //arrow down
-                    doMove(0);
+                case UP_KEY: case DOWN_KEY:
+                    doMove(c == UP_KEY ? 1 : 0);
                     break;
                 case CONFIRM_KEY:
                     switch(currentItem->getType()) {
                         case BasicItem::CHECKBOX:
-                            checkBoxCast = (CheckBox*) currentItem;
-
-                            if(checkBoxCast->onCheckBoxChange == nullptr)
-                                checkBoxCast->setValue((bool*)(checkBoxCast->getValue())?false:true);
+                            if(((CheckBox*) currentItem)->onCheckBoxChange == nullptr)
+                                ((CheckBox*) currentItem)
+                                    ->setValue((bool*)((CheckBox*) currentItem)
+                                        ->getValue()?false:true);
                             else
-                                (*(checkBoxCast->onCheckBoxChange))();
+                                (*(((CheckBox*) currentItem)->onCheckBoxChange))();
 
                             break;
                         case BasicItem::BUTTON:
-                            buttonCast = (Button*) currentItem;
-                            if(buttonCast->onButtonPress != nullptr)
-                                (*(buttonCast->onButtonPress))();
+                            if(((Button*) currentItem)->onButtonPress != nullptr)
+                                (*(((Button*) currentItem)->onButtonPress))();
                             break;
+                        #if CONFIRM_KEY == ' '
                         case BasicItem::TEXTBOX:
                             if (c == ' ')
                                 goto textBoxHandler;
                             break;
+                        #endif
                     }
                     if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
                     currentItem->draw(true);
@@ -514,11 +527,10 @@ namespace sclui {
                     textBoxHandler:
                         if(currentItem != NULL) {
                             if(currentItem->getType() == BasicItem::TEXTBOX) {
-                                textBoxCast = (TextBox*) currentItem;
-                                if(textBoxCast->onKeyPress == nullptr) {
-                                    textBoxCast->defaultKeyPressEvent(c);
+                                if(((TextBox*) currentItem)->onKeyPress == nullptr) {
+                                    ((TextBox*) currentItem)->defaultKeyPressEvent(c);
                                 }else{
-                                    (*(textBoxCast->onKeyPress))(c);
+                                    (*(((TextBox*) currentItem)->onKeyPress))(c);
                                 }
 
                             }
@@ -539,16 +551,16 @@ namespace sclui {
                 currentScreen->drawItems();
             }
             currentScreen = subScreens.at(this->subScreenIndex);
-            currentScreen->drawFrame(dragging ? 2 : 1); //drag frame
+            currentScreen->drawFrame(currentScreen->isDragging ? 2 : 1); //drag frame
             currentItem = currentScreen->getFirstInteractableItem();
-            if(currentItem != NULL) {
-                if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
-                currentItem->draw(true);
-            }
         }else{
             currentScreen = this;
             if(this->border) drawFrame(1);
             drawItems();
+        }
+        if(currentItem != NULL) {
+            if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
+                currentItem->draw(true);
         }
         if(currentScreen->onFocus != nullptr) (*(currentScreen->onFocus))();
         refresh();
@@ -556,36 +568,17 @@ namespace sclui {
     }
 
     void Screen::draw() {
-        clear();
-        if(subScreens.size() > 0) {
-            for(auto &n : subScreens) {
-                currentScreen = n;
-                if(currentScreen->border) currentScreen->drawFrame(0);
-                currentScreen->drawItems();
-            }
-            currentScreen = subScreens.at(this->subScreenIndex);
-            currentScreen->drawFrame(1);
-            currentItem = currentScreen->getFirstInteractableItem();
-            currentScreen->run();
-        }else{
-            currentScreen = this;
-            if(this->border) drawFrame(1);
-            drawItems();
-            run();
-        }
-        if(currentScreen->onFocus != nullptr) (*(currentScreen->onFocus))();
-        
-        
+        update();
+        currentScreen->run(); 
     }
 
     void Screen::centerItem(Screen::axis pAxis, BasicItem *i) {
-        TextBox *textBoxCast = nullptr;
         switch(pAxis) {
             case X:
                 switch(i->getType()) {
                     case BasicItem::TEXTBOX:
-                        textBoxCast = (TextBox*) i;
-                        i->setX((width / 2) - ((i->getName().length() /2) + ((textBoxCast->getMaxLength() + 4) / 2)));
+                        i->setX((width / 2) - ((i->getName().length() /2) + 
+                                ((((TextBox*) i)->getMaxLength() + 4) / 2)));
                         break;
                     case BasicItem::CHECKBOX:
                         i->setX((width / 2) - ((i->getName().length() /2) + 4));
