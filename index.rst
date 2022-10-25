@@ -248,6 +248,7 @@ Pop
 Default Key Press Event
 """""""""""""""""""""""
 It is the default event, that is called when no event is registered. It is public so it can be used in custom press events to avoid code duplication!
+
 .. code-block:: CPP
 
     void defaultKeyPressEvent(int c);
