@@ -55,14 +55,7 @@ namespace sclui {
             bool interactable,visible = true;
     };
 
-    template <class T>
-    class Interactable : public BasicItem{
-        friend class Screen;
-        public:
-            virtual T *getValue() = 0;
-    };
-
-    class TextBox : public Interactable<std::string> {
+    class TextBox : public BasicItem {
         private:
             virtual void draw(bool v) override;
             char splitter;
@@ -75,14 +68,14 @@ namespace sclui {
 
             TextBox(std::string_view  pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter);
             
-            virtual std::string *getValue() override;
+            std::string *getValue();
             int maxLength;
             std::string value;
             void append(char c);
             void pop();
     };
 
-    class CheckBox : public Interactable<bool> {
+    class CheckBox : public BasicItem {
         private:
             bool value;
             virtual void draw(bool v) override;
@@ -90,11 +83,11 @@ namespace sclui {
             CheckBox(std::string_view  pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
 
             void(*onCheckBoxChange)() = nullptr;
-            virtual bool *getValue() override;
+            bool *getValue();
             void setValue(bool v);
     };
 
-    class Button : public Interactable<void> {   
+    class Button : public BasicItem {   
         private:
             virtual void draw(bool v) override;
         public:
@@ -102,8 +95,7 @@ namespace sclui {
 
             Button(std::string_view  pName,int px, int pY,int pColor, int pColorFocus);
 
-            
-            virtual void *getValue() override;
+            void *getValue();
         };
 
     class Text : public BasicItem{
