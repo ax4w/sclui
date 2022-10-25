@@ -155,6 +155,13 @@ Constructor
     
 Functions
 ^^^^^^^^^
+
+Get Value
+"""""""""
+.. code-block:: CPP
+    
+    std::string getValue() 
+    
 Filter
 """"""
 Filter is can be set to allow certain characters. If not set, every character will be allowed
@@ -201,6 +208,12 @@ Constructor
 
 Functions
 ^^^^^^^^^^
+
+Get Value
+"""""""""
+.. code-block:: CPP
+    
+    bool getValue() 
     
 Events
 ^^^^^^^
