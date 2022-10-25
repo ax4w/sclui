@@ -67,7 +67,7 @@ namespace sclui {
 
             void defaultKeyPressEvent(int c);
 
-            TextBox(std::string_view  name,int x, int y, int maxLength,int color, int colorFocus, bool(*filter)(int), char splitter);
+            TextBox(std::string_view  pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter);
             
             virtual std::string *getValue() override;
             int maxLength;
@@ -81,7 +81,7 @@ namespace sclui {
             bool value;
             virtual void draw(bool v) override;
         public:
-            CheckBox(std::string_view  name,int x, int y,int color, int colorFocus, bool value);
+            CheckBox(std::string_view  pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
 
             void(*onCheckBoxChange)() = nullptr;
             virtual bool *getValue() override;
@@ -94,7 +94,7 @@ namespace sclui {
         public:
             void(*onButtonPress)() = nullptr;
 
-            Button(std::string_view  name,int x, int y,int color, int colorFocus);
+            Button(std::string_view  pName,int px, int pY,int pColor, int pColorFocus);
 
             
             virtual void *getValue() override;
@@ -104,7 +104,7 @@ namespace sclui {
         private:
             virtual void draw(bool v) override;
         public:
-            Text(std::string_view  name,int x, int y,int color);
+            Text(std::string_view  pName,int px, int pY,int pColor);
 
             
     };
@@ -134,8 +134,7 @@ namespace sclui {
         public:
 
             int x,y,width, height;
-            Screen(std::string_view title, int width, int height, int x, int y);
-
+            Screen(std::string_view pTitle, int pWidth, int pHeight, int pX, int pY);
             
             void(*onDestruct)() = nullptr;
             void(*onFocus)()= nullptr;

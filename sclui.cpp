@@ -133,16 +133,16 @@ namespace sclui {
     }
 
 
-    Button::Button(std::string_view  name, int x, int y, 
-    int color, int colorFocus) {
-        name = name;
+    Button::Button(std::string_view  pName, int pX, int pY, 
+    int pColor, int pColorFocus) {
+        name = pName;
         type = BUTTON;
-        color = color;
-        colorFocus = colorFocus;
+        color = pColor;
+        colorFocus = pColorFocus;
         itemIndex = cIndex++;
         interactable = true;
-        x = x;
-        y = y;
+        x = pX;
+        y = pY;
     }
 
     void Button::draw(bool v) {
@@ -157,14 +157,14 @@ namespace sclui {
         return nullptr;
     }
 
-    CheckBox::CheckBox(std::string_view  name,int x, int y,int color, 
-    int colorFocus, bool value) {
-        name = name;
-        x = x;
-        y = y;
-        color = color;
-        colorFocus = colorFocus;
-        value = value;
+    CheckBox::CheckBox(std::string_view  pName,int pX, int pY,int pColor, 
+    int pColorFocus, bool defaultValue) {
+        name = pName;
+        x = pX;
+        y = pY;
+        color = pColor;
+        colorFocus = pColorFocus;
+        value = defaultValue;
         interactable = true;
         type = CHECKBOX;
         itemIndex = cIndex++;
@@ -186,11 +186,11 @@ namespace sclui {
         value = v;
     }
 
-    Text::Text(std::string_view  name,int x, int y,int color) {
-        name = name;
-        x = x;
-        y = y;
-        color = color;
+    Text::Text(std::string_view  pName,int pX, int pY,int pColor) {
+        name = pName;
+        x = pX;
+        y = pY;
+        color = pColor;
         interactable = false;
         type = BASIC;
         itemIndex = cIndex++;
@@ -214,13 +214,14 @@ namespace sclui {
     }
 
     //screen
-    Screen::Screen(std::string_view title, int width, int height, int x, int y) : 
-                title{title},
-                width{width},
-                height{height},
-                x{x},
-                y{y}
-                {}
+    Screen::Screen(std::string_view pTitle,int pWidth, int pHeight, int pX, int pY) {
+        width = pWidth;
+        height = pHeight;
+        title = pTitle;
+        subScreenIndex = 0;
+        x = pX;
+        y = pY;
+    }
 
 
     void Screen::addItem(BasicItem *i) {
@@ -251,19 +252,19 @@ namespace sclui {
         return nullptr;
     }
 
-    TextBox::TextBox(std::string_view  name,int x, int y, int maxLength,int color, 
-    int colorFocus, bool(*filter)(int), char splitter) {
-        name = name;
-        x = x;
-        y = y;
-        maxLength = maxLength;
+    TextBox::TextBox(std::string_view  pName,int pX, int pY, int pMaxLength,int pColor, 
+    int pColorFocus, bool(*pFilter)(int), char pSplitter) {
+        name = pName;
+        x = pX;
+        y = pY;
+        maxLength = pMaxLength;
         itemIndex = cIndex++;
         interactable = true;
         type = TEXTBOX;
-        color = color;
-        colorFocus = colorFocus;
-        filter = filter;
-        splitter = splitter;
+        color = pColor;
+        colorFocus = pColorFocus;
+        filter = pFilter;
+        splitter = pSplitter;
     }
 
     void TextBox::defaultKeyPressEvent(int c) {
