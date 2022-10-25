@@ -42,7 +42,6 @@ namespace sclui {
 
     static int cIndex = 2;
 
-    //doesnt need to be freed manually, since its not "new"
     static Screen *currentScreen = nullptr;
 
     void doQuit() {
