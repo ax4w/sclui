@@ -1,6 +1,15 @@
 Simple Command Line User Interface
 ===================================
 
+How To: Compile
+===============
+
+Example, how to compile the single screen example from samples/
+
+.. code-block:: CPP
+    
+    g++ singleScreen.cpp -I ../ ../sclui.cpp -lncurses
+
 How To: Create own Item
 =======================
 If you want an **non interactable** Item, extend on the **BasicItem**-Class.
