@@ -41,7 +41,7 @@ int main(void) {
 
     subScreen2 = new Screen("S2", 30, 15 , 12, 12);
     Button b4 = Button("next",2,4,COLOR_BLUE,COLOR_RED);
-    TextBox text = TextBox("textbox",2,6,10,COLOR_WHITE,COLOR_GREEN, &TextBoxFilterAllowAll,'|');
+    TextBox text = TextBox("textbox",2,6,10,COLOR_WHITE,COLOR_GREEN, &TextBoxFilterIsText,'|');
 
     b4.onButtonPress = &switchScreen;
     subScreen2->addItem(&b4);

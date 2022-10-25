@@ -511,6 +511,7 @@ namespace sclui {
                     textBoxHandler:
                         if(currentItem != NULL) {
                             if(currentItem->getType() == BasicItem::TEXTBOX) {
+                                if(c != KEY_BACKSPACE && !(*(((TextBox*) currentItem)->filter))(c)) continue;
                                 if(((TextBox*) currentItem)->onKeyPress == nullptr) {
                                     ((TextBox*) currentItem)->defaultKeyPressEvent(c);
                                 }else{
