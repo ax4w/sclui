@@ -12,9 +12,9 @@ Example, how to compile the single screen example from samples/
 
 How To: Create own Item
 =======================
-If you want an **non interactable** Item, extend on the **BasicItem**-Class.
+If you want an Item, extend on the **BasicItem**-Class.
+To make it interactable, set *interactable* to true in the constructor.
 
-If you want an **interactable** Item, extend on the **Interactable**-Class.
 
 For both classes you have to impliment some methods. 
 
