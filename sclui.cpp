@@ -447,23 +447,12 @@ namespace sclui {
     void Screen::handleDrag(int c) {
         if(currentScreen->getMotherScreen() != nullptr) {
             currentScreen->isDragging = true;
-
-            /*
-                *Fire on Drag begin event
-            */
             if(currentScreen->onDragBegin != nullptr) (*(currentScreen->onDragBegin))();
             do{
-                /*
-                    Fire on Drag event
-                */
                 if(currentScreen->onDrag != nullptr) (*(currentScreen->onDrag))();
                 drag(c);
             }while((c=getch()) != '#');
             currentScreen->isDragging = false;
-
-            /*
-                *Fire on Drop Event
-            */
             if(currentScreen->onDrop != nullptr) (*(currentScreen->onDrop))();
             currentScreen->motherScreen->draw(); //redraw all after dragging is done
         } 
@@ -473,7 +462,6 @@ namespace sclui {
         if(currentScreen->motherScreen->subScreenIndex 
         == currentScreen->motherScreen->subScreens.size()-1) {
             currentScreen->motherScreen->subScreenIndex = 0;
-
         }else{
             currentScreen->motherScreen->subScreenIndex++;
         }
@@ -501,13 +489,10 @@ namespace sclui {
                 case CONFIRM_KEY:
                     switch(currentItem->getType()) {
                         case BasicItem::CHECKBOX:
-                            if(((CheckBox*) currentItem)->onCheckBoxChange == nullptr)
-                                ((CheckBox*) currentItem)
+                           ((CheckBox*) currentItem)
                                     ->setValue((bool*)((CheckBox*) currentItem)
                                         ->getValue()?false:true);
-                            else
-                                (*(((CheckBox*) currentItem)->onCheckBoxChange))();
-
+                            (*(((CheckBox*) currentItem)->onCheckBoxChange))();
                             break;
                         case BasicItem::BUTTON:
                             if(((Button*) currentItem)->onButtonPress != nullptr)
@@ -590,7 +575,6 @@ namespace sclui {
                         i->setX((width / 2) - (i->getName().length() /2));
                         break;
                 }
-            
                 break;
             case Y:
                 i->setY(height / 2);
