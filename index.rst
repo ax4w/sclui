@@ -113,34 +113,12 @@ Add SubScreen
 
     void addSubScreen(Screen *i);
 
-
-Set Title
-"""""""""
-.. code-block:: CPP
-
-    void setTitle(std::string s);
-
-Get Item By Name
-""""""""""""""""
-.. code-block:: CPP
-    
-    BasicItem *getItemByName(const char *name);
-
 Center Item
 """""""""""
 .. code-block:: CPP
 
     void centerItem(Screen::axis pAxis, BasicItem *i);
-Get Item From Index
-"""""""""""""""""""
-.. code-block:: CPP
 
-    BasicItem *getItemAt(int index);
-Get SubScreen From Index
-""""""""""""""""""""""""
-.. code-block:: CPP
-
-    Screen *getSubScreenAt(int index);
 Draw
 """"
 Draw only needs to be called when the screen is initially *startet*. Changes that happen, after *draw* was called can be applied using *update*
@@ -153,46 +131,8 @@ Update
 .. code-block:: CPP
 
     void update();
-Get Width
-"""""""""
-.. code-block:: CPP
 
-    int getWith() const;
-Set Width
-"""""""""
-.. code-block:: CPP
 
-      void setWith(int v);
-Get Height
-""""""""""
-.. code-block:: CPP
-
-    int getHeight() const;
-Set Height
-""""""""""
-.. code-block:: CPP
-
-    void setHeight(int v);
-Set X
-"""""
-.. code-block:: CPP
-
-    void setX(int v);
-Get X
-"""""
-.. code-block:: CPP
-
-    int getX() const;
-Set Y
-"""""
-.. code-block:: CPP
-    
-    void setY(int v);
-Get Y
-"""""
-.. code-block:: CPP
-
-     int getY() const;
 
 
 Text
@@ -222,27 +162,7 @@ Filter is can be set to allow certain characters. If not set, every character wi
 .. code-block:: CPP
 
     bool(*filter)(int) = nullptr;
-
-Get Value
-"""""""""
-.. code-block:: CPP
-
-    std::string getValue()
-Set Text
-"""""""""
-.. code-block:: CPP
-
-    void setText(std::string s);
-Get Value Length
-"""""""""""""""""
-.. code-block:: CPP
-
-    int getValueLength() const;
-Get Max Length
-"""""""""""""""
-.. code-block:: CPP
     
-    int getMaxLength() const;
 Append
 """"""
 .. code-block:: CPP
@@ -281,18 +201,6 @@ Constructor
 
 Functions
 ^^^^^^^^^^
-
-Get Value
-""""""""""
-.. code-block:: CPP
-
-    bool getValue();
-    
-Set Value
-"""""""""
-.. code-block:: CPP
-
-    void setValue(bool v);
     
 Events
 ^^^^^^^
@@ -304,9 +212,6 @@ On CheckBox Change
     void(*onCheckBoxChange)() 
 Button
 ------
-
-
-
 
 Constructor
 ^^^^^^^^^^^^ 
