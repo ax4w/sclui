@@ -59,6 +59,7 @@ namespace sclui {
             std::string value;
             int maxLength;
             char splitter;
+            virtual void draw(bool v) override;
         public:
             bool(*filter)(int) = nullptr;
 
@@ -67,7 +68,7 @@ namespace sclui {
             void defaultKeyPressEvent(int c);
 
             TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter);
-            virtual void draw(bool v) override;
+            
             virtual std::string getValue() override;
             void setText(std::string s);
             int getValueLength() const;
@@ -79,31 +80,34 @@ namespace sclui {
     class CheckBox : public Interactable<bool> {
         private:
             bool value;
+            virtual void draw(bool v) override;
         public:
             CheckBox(std::string pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
 
             void(*onCheckBoxChange)() = nullptr;
-
-            virtual void draw(bool v) override;
             virtual bool getValue() override;
             void setValue(bool v);
     };
 
     class Button : public Interactable<void> {   
+        private:
+            virtual void draw(bool v) override;
         public:
             void(*onButtonPress)() = nullptr;
 
             Button(std::string pName,int px, int pY,int pColor, int pColorFocus);
 
-            virtual void draw(bool v) override;
+            
             virtual void getValue() override;
         };
 
-        class Text : public BasicItem{
+    class Text : public BasicItem{
+        private:
+            virtual void draw(bool v) override;
         public:
             Text(std::string pName,int px, int pY,int pColor);
 
-            virtual void draw(bool v) override;
+            
     };
 
     class Screen {
