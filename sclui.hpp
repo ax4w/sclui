@@ -24,7 +24,12 @@ namespace sclui {
     class BasicItem {
         friend class Screen;
         public:
-            enum types {BASIC,BUTTON,CHECKBOX,TEXTBOX};
+            enum class types {
+                BASIC = 0,
+                BUTTON = 1,
+                CHECKBOX = 2,
+                TEXTBOX = 3
+            };
             int itemIndex;
             types getType() const;
             int getX() const;
@@ -131,9 +136,7 @@ namespace sclui {
             void handleDrag(int c);
             void switchFocus();
             void moveHelper(int i);
-        
         public:
-
             int x,y,width, height;
             Screen(std::string_view pTitle, int pWidth, int pHeight, int pX, int pY);
             

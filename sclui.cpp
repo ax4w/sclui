@@ -132,11 +132,13 @@ namespace sclui {
         attron(COLOR_PAIR(itemIndex));
     }
 
+    
+
 
     Button::Button(std::string_view  pName, int pX, int pY, 
     int pColor, int pColorFocus) {
         name = pName;
-        type = BUTTON;
+        type = types::BUTTON;
         color = pColor;
         colorFocus = pColorFocus;
         itemIndex = cIndex++;
@@ -166,7 +168,7 @@ namespace sclui {
         colorFocus = pColorFocus;
         value = defaultValue;
         interactable = true;
-        type = CHECKBOX;
+        type = types::CHECKBOX;
         itemIndex = cIndex++;
     }
 
@@ -192,7 +194,7 @@ namespace sclui {
         y = pY;
         color = pColor;
         interactable = false;
-        type = BASIC;
+        type = types::BASIC;
         itemIndex = cIndex++;
 
     }
@@ -260,7 +262,7 @@ namespace sclui {
         maxLength = pMaxLength;
         itemIndex = cIndex++;
         interactable = true;
-        type = TEXTBOX;
+        type = types::TEXTBOX;
         color = pColor;
         colorFocus = pColorFocus;
         filter = pFilter;
@@ -472,21 +474,21 @@ namespace sclui {
                     break;
                 case CONFIRM_KEY:
                     switch(currentItem->getType()) {
-                        case BasicItem::CHECKBOX:
+                        case BasicItem::types::CHECKBOX:
                             cCast = (CheckBox*)currentItem;
                             cCast->setValue(*(cCast->getValue())?false:true);
                             if(*cCast->onCheckBoxChange != nullptr)
                                 (*(cCast->onCheckBoxChange))();
                             cCast = nullptr;
                             break;
-                        case BasicItem::BUTTON:
+                        case BasicItem::types::BUTTON:
                             bCast = (Button*)currentItem;
                             if(*bCast->onButtonPress != nullptr) 
                                 (*(bCast->onButtonPress))();
                             bCast = nullptr;
                             break;
                         #if CONFIRM_KEY == ' '
-                        case BasicItem::TEXTBOX:
+                        case BasicItem::types::TEXTBOX:
                             if (c == ' ')
                                 goto textBoxHandler;
                             break;
@@ -498,7 +500,7 @@ namespace sclui {
                 default:
                     textBoxHandler:
                         if(currentItem != nullptr) {
-                            if(currentItem->getType() == BasicItem::TEXTBOX) {
+                            if(currentItem->getType() == BasicItem::types::TEXTBOX) {
                                 tbCast = (TextBox*)currentItem;
                                 if(c != KEY_BACKSPACE && !(*tbCast->filter)(c)) continue;
                                 if(*tbCast->onKeyPress == nullptr) {
@@ -552,14 +554,14 @@ namespace sclui {
         switch(pAxis) {
             case X:
                 switch(i->getType()) {
-                    case BasicItem::TEXTBOX:
+                    case BasicItem::types::TEXTBOX:
                         i->setX((width / 2) - ((i->name.length() /2) + 
                                 ((((TextBox*) i)->maxLength + 4) / 2)));
                         break;
-                    case BasicItem::CHECKBOX:
+                    case BasicItem::types::CHECKBOX:
                         i->setX((width / 2) - ((i->name.length() /2) + 4));
                         break;
-                    case BasicItem::BUTTON:
+                    case BasicItem::types::BUTTON:
                         i->setX((width / 2) - ((i->name.length() /2) + 2));
                         break;
                     default:
