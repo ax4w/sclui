@@ -1,1 +1,2 @@
-# Simple Command Line User Interface for C++
+Simple Command Line User Interface
+===================================
