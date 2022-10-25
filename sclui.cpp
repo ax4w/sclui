@@ -1,5 +1,6 @@
 #include "sclui.hpp"
-#include <cstring>
+#include <string>
+#include <string_view>
 #include <curses.h>
 
 
@@ -60,7 +61,7 @@ namespace sclui {
 
     void initSclui() {
         WINDOW *w = initscr();
-        assert(w != NULL);
+        assert(w != nullptr);
         raw();
         noecho();
         start_color();
@@ -98,9 +99,6 @@ namespace sclui {
         colorFocus = c;
     }
 
-    std::string BasicItem::getName() const {
-        return name;
-    }
     int BasicItem::getX() const {
         return x;
     }
@@ -124,7 +122,7 @@ namespace sclui {
     }
 
     void BasicItem::moveTo() {
-        move(currentScreen->getY() + y,currentScreen->getX() + x);
+        move(currentScreen->y + y,currentScreen->x + x);
     }
 
     void BasicItem::chooseColor(bool b) {
@@ -135,7 +133,7 @@ namespace sclui {
     }
 
 
-    Button::Button(std::string pName, int pX, int pY, 
+    Button::Button(std::string_view  pName, int pX, int pY, 
     int pColor, int pColorFocus) {
         name = pName;
         type = BUTTON;
@@ -155,11 +153,11 @@ namespace sclui {
         this->moveTo();
     }
 
-    void Button::getValue() {
-        return;
+    void *Button::getValue() {
+        return nullptr;
     }
 
-    CheckBox::CheckBox(std::string pName,int pX, int pY,int pColor, 
+    CheckBox::CheckBox(std::string_view  pName,int pX, int pY,int pColor, 
     int pColorFocus, bool defaultValue) {
         name = pName;
         x = pX;
@@ -180,15 +178,15 @@ namespace sclui {
         this->moveTo();
     }
 
-    bool CheckBox::getValue() {
-        return value;
+    bool *CheckBox::getValue() {
+        return &value;
     }
 
     void CheckBox::setValue(bool v) {
         value = v;
     }
 
-    Text::Text(std::string pName,int pX, int pY,int pColor) {
+    Text::Text(std::string_view  pName,int pX, int pY,int pColor) {
         name = pName;
         x = pX;
         y = pY;
@@ -216,7 +214,7 @@ namespace sclui {
     }
 
     //screen
-    Screen::Screen(std::string pTitle,int pWidth, int pHeight, int pX, int pY) {
+    Screen::Screen(std::string_view pTitle,int pWidth, int pHeight, int pX, int pY) {
         width = pWidth;
         height = pHeight;
         title = pTitle;
@@ -231,7 +229,7 @@ namespace sclui {
     }
 
     BasicItem *Screen::getFirstInteractableItem() {
-        if(items.size() == 0) return NULL;
+        if(items.size() == 0) return nullptr;
         int index = 0;
         for(auto &i: items) {
             if(i->isInteractable() && i->isVisible()) {
@@ -241,20 +239,20 @@ namespace sclui {
             index++;
             
         }
-        return NULL;
+        return nullptr;
     }
 
     BasicItem *Screen::getItemByName(const char *name) {
         //auto generate type
         for(auto &i : items) {
-            if(i->getName().compare(name)== 0) {
+            if(i->name.compare(name)== 0) {
                 return i;
             }
         }
         return nullptr;
     }
 
-    TextBox::TextBox(std::string pName,int pX, int pY, int pMaxLength,int pColor, 
+    TextBox::TextBox(std::string_view  pName,int pX, int pY, int pMaxLength,int pColor, 
     int pColorFocus, bool(*pFilter)(int), char pSplitter) {
         name = pName;
         x = pX;
@@ -270,23 +268,15 @@ namespace sclui {
     }
 
     void TextBox::defaultKeyPressEvent(int c) {
-        if(c == KEY_BACKSPACE && this->getValueLength() > 0) {
+        if(c == KEY_BACKSPACE && this->value.size() > 0) {
             this->pop();
         }else{
-            if(this->getValueLength() < this->getMaxLength() && (*(this->filter))(c)) {
+            if(this->value.size() < this->maxLength && (*(this->filter))(c)) {
                 this->append(c);
             }
         }
         if(this->onDraw != nullptr) (*(this->onDraw))();
         this->draw(true);
-    }
-
-    int TextBox::getValueLength() const {
-        return value.length();
-    }
-
-    int TextBox::getMaxLength() const {
-        return maxLength;
     }
 
     void TextBox::draw(bool v) {
@@ -296,22 +286,18 @@ namespace sclui {
         printw("[ %s%c" , name.c_str(),splitter); 
         for(int i = 0; i < maxLength; i++) printw(" ");
         printw("]");
-        move(currentScreen->getY()+ y, currentScreen->getX() + x+3 + name.length());
+        move(currentScreen->y+ y, currentScreen->x + x+3 + name.length());
         printw("%s",value.c_str());
     }
 
-    std::string TextBox::getValue() {
-        return value;
+    std::string *TextBox::getValue() {
+        return &value;
     }
     void TextBox::append(char c) {
         value.push_back(c);
     }
     void TextBox::pop() {
         value.pop_back();
-    }
-
-    void TextBox::setText(std::string s) {
-        value = s;
     }
 
     char getHFrame(int v) {
@@ -332,7 +318,7 @@ namespace sclui {
     }
 
     void Screen::drawFrame(int v) {
-        move(getY(),getX());
+        move(y,x);
         init_pair(1,COLOR_BLACK,COLOR_WHITE);
         attron(COLOR_PAIR(1));
         for(int i = 0; i <= width; i++) {
@@ -342,16 +328,16 @@ namespace sclui {
                 i += title.length();
             }
         }
-        move(getY()+height,getX());
+        move(y+height,x);
         for(int i = 0; i <= width; i++) {
             printw("%c",getHFrame(v));
         }
         for(int i = 0; i <= height; i++) {
-            move(getY() + i, getX());
+            move(y + i, x);
             printw("%c",V_FRAME);
         }
         for(int i = 0; i <= height; i++) {
-            move(getY() + i, getX() + width);
+            move(y + i, x + width);
             printw("%c",V_FRAME);
         }
         attroff(COLOR_PAIR(1));
@@ -406,36 +392,32 @@ namespace sclui {
         
     }
 
-    Screen *Screen::getMotherScreen() const {
-        return motherScreen;
-    }
-
 
     void drag(int c) {
-        int fullX = currentScreen->getX() + currentScreen->getWith();
-        int fullY = currentScreen->getY() + currentScreen->getHeight();
-        int x = currentScreen->getX();
-        int y = currentScreen->getY();
-        Screen *m = currentScreen->getMotherScreen();
+        int fullX = currentScreen->x+ currentScreen->width;
+        int fullY = currentScreen->y + currentScreen->height;
+        int x = currentScreen->x;
+        int y = currentScreen->y;
+        Screen *m = currentScreen->motherScreen;
         switch(c) {
             case KEY_RIGHT:
-                if(fullX+1 < m->getWith()) {
-                    currentScreen->setX(x+1);
+                if(fullX+1 < m->width) {
+                    currentScreen->x++;
                 }
                 break;
             case KEY_LEFT:
                 if(x-1 >= 0) {
-                    currentScreen->setX(x-1);
+                    currentScreen->x--;
                 }
                 break;
             case KEY_UP:
                 if(y-1 >= 0) {
-                    currentScreen->setY(y-1);
+                    currentScreen->y--;
                 }
                 break;
             case KEY_DOWN:
-                if(fullY+1 < m->getHeight()) {
-                    currentScreen->setY(y+1);
+                if(fullY+1 < m->height) {
+                    currentScreen->y++;
                 }
                 break;
         }
@@ -444,13 +426,13 @@ namespace sclui {
     }
 
     void Screen::handleDrag(int c) {
-        if(currentScreen->getMotherScreen() != nullptr) {
+        if(currentScreen->motherScreen != nullptr) {
             currentScreen->isDragging = true;
             if(currentScreen->onDragBegin != nullptr) (*(currentScreen->onDragBegin))();
             do{
                 if(currentScreen->onDrag != nullptr) (*(currentScreen->onDrag))();
                 drag(c);
-            }while((c=getch()) != '#');
+            }while((c=getch()) != DRAG_KEY);
             currentScreen->isDragging = false;
             if(currentScreen->onDrop != nullptr) (*(currentScreen->onDrop))();
             currentScreen->motherScreen->draw(); //redraw all after dragging is done
@@ -469,6 +451,9 @@ namespace sclui {
     }
     void Screen::run() {
         int c;
+        CheckBox *cCast = nullptr;
+        Button *bCast = nullptr;
+        TextBox * tbCast = nullptr;
         for(;;) {
             c = getch();
             switch(c) {
@@ -488,14 +473,17 @@ namespace sclui {
                 case CONFIRM_KEY:
                     switch(currentItem->getType()) {
                         case BasicItem::CHECKBOX:
-                           ((CheckBox*) currentItem)
-                                    ->setValue((bool*)((CheckBox*) currentItem)
-                                        ->getValue()?false:true);
-                            (*(((CheckBox*) currentItem)->onCheckBoxChange))();
+                            cCast = (CheckBox*)currentItem;
+                            cCast->setValue(*(cCast->getValue())?false:true);
+                            if(*cCast->onCheckBoxChange != nullptr)
+                                (*(cCast->onCheckBoxChange))();
+                            cCast = nullptr;
                             break;
                         case BasicItem::BUTTON:
-                            if(((Button*) currentItem)->onButtonPress != nullptr)
-                                (*(((Button*) currentItem)->onButtonPress))();
+                            bCast = (Button*)currentItem;
+                            if(*bCast->onButtonPress != nullptr) 
+                                (*(bCast->onButtonPress))();
+                            bCast = nullptr;
                             break;
                         #if CONFIRM_KEY == ' '
                         case BasicItem::TEXTBOX:
@@ -509,14 +497,16 @@ namespace sclui {
                     break;
                 default:
                     textBoxHandler:
-                        if(currentItem != NULL) {
+                        if(currentItem != nullptr) {
                             if(currentItem->getType() == BasicItem::TEXTBOX) {
-                                if(c != KEY_BACKSPACE && !(*(((TextBox*) currentItem)->filter))(c)) continue;
-                                if(((TextBox*) currentItem)->onKeyPress == nullptr) {
-                                    ((TextBox*) currentItem)->defaultKeyPressEvent(c);
+                                tbCast = (TextBox*)currentItem;
+                                if(c != KEY_BACKSPACE && !(*tbCast->filter)(c)) continue;
+                                if(*tbCast->onKeyPress == nullptr) {
+                                    tbCast->defaultKeyPressEvent(c);
                                 }else{
-                                    (*(((TextBox*) currentItem)->onKeyPress))(c);
+                                    (*(tbCast->onKeyPress))(c);
                                 }
+                                tbCast = nullptr;
 
                             }
                         }
@@ -543,11 +533,12 @@ namespace sclui {
             if(this->border) drawFrame(1);
             drawItems();
         }
-        if(currentItem != NULL) {
+        if(currentItem != nullptr) {
             if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
                 currentItem->draw(true);
         }
         if(currentScreen->onFocus != nullptr) (*(currentScreen->onFocus))();
+        
         refresh();
         
     }
@@ -562,17 +553,17 @@ namespace sclui {
             case X:
                 switch(i->getType()) {
                     case BasicItem::TEXTBOX:
-                        i->setX((width / 2) - ((i->getName().length() /2) + 
-                                ((((TextBox*) i)->getMaxLength() + 4) / 2)));
+                        i->setX((width / 2) - ((i->name.length() /2) + 
+                                ((((TextBox*) i)->maxLength + 4) / 2)));
                         break;
                     case BasicItem::CHECKBOX:
-                        i->setX((width / 2) - ((i->getName().length() /2) + 4));
+                        i->setX((width / 2) - ((i->name.length() /2) + 4));
                         break;
                     case BasicItem::BUTTON:
-                        i->setX((width / 2) - ((i->getName().length() /2) + 2));
+                        i->setX((width / 2) - ((i->name.length() /2) + 2));
                         break;
                     default:
-                        i->setX((width / 2) - (i->getName().length() /2));
+                        i->setX((width / 2) - (i->name.length() /2));
                         break;
                 }
                 break;
@@ -585,14 +576,6 @@ namespace sclui {
                 break;
         }
     }
-
-    BasicItem *Screen::getItemAt(int index) {
-        return items.at(index);
-    }
-
-    Screen *Screen::getSubScreenAt(int index) {
-        return subScreens.at(index);
-    }
     void Screen::addSubScreen(Screen *i) {
         i->motherScreen = this;
         subScreens.push_back(i);
@@ -601,33 +584,6 @@ namespace sclui {
     void Screen::setTitle(std::string s) {
         title = s;
     }
-
-    int Screen::getWith() const {
-        return width;
-    }
-    int Screen::getHeight() const {
-        return height;
-    }
-    int Screen::getX() const {
-        return x;
-    }
-    int Screen::getY() const {
-        return y;
-    }
-
-    void Screen::setWith(int v) {
-        width = v;
-    }
-    void Screen::setHeight(int v) {
-        height = v;
-    }
-    void Screen::setX(int v) {
-        x = v;
-    }
-    void Screen::setY(int v) {
-        y = v;
-    }
-
     void Screen::setBorder(bool v) {
         border = v;
     }

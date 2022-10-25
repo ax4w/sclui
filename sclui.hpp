@@ -2,6 +2,7 @@
 #define COLOR_BLANK -1
 #include <vector>
 #include <string>
+#include <string_view>
 #include <curses.h>
 #include <assert.h>
 
@@ -21,11 +22,11 @@ namespace sclui {
     int getMaxY();
     
     class BasicItem {
+        friend class Screen;
         public:
-            typedef enum {BASIC,BUTTON,CHECKBOX,TEXTBOX} types; 
+            enum types {BASIC,BUTTON,CHECKBOX,TEXTBOX};
             int itemIndex;
             types getType() const;
-            std::string getName() const;
             int getX() const;
             int getY() const;
             void setX(int pX);
@@ -50,16 +51,15 @@ namespace sclui {
 
     template <class T>
     class Interactable : public BasicItem{
+        friend class Screen;
         public:
-            virtual T getValue() = 0;
+            virtual T *getValue() = 0;
     };
 
     class TextBox : public Interactable<std::string> {
         private:
-            std::string value;
-            int maxLength;
-            char splitter;
             virtual void draw(bool v) override;
+            char splitter;
         public:
             bool(*filter)(int) = nullptr;
 
@@ -67,12 +67,11 @@ namespace sclui {
 
             void defaultKeyPressEvent(int c);
 
-            TextBox(std::string pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter);
+            TextBox(std::string_view  pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter);
             
-            virtual std::string getValue() override;
-            void setText(std::string s);
-            int getValueLength() const;
-            int getMaxLength() const;
+            virtual std::string *getValue() override;
+            int maxLength;
+            std::string value;
             void append(char c);
             void pop();
     };
@@ -82,10 +81,10 @@ namespace sclui {
             bool value;
             virtual void draw(bool v) override;
         public:
-            CheckBox(std::string pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
+            CheckBox(std::string_view  pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
 
             void(*onCheckBoxChange)() = nullptr;
-            virtual bool getValue() override;
+            virtual bool *getValue() override;
             void setValue(bool v);
     };
 
@@ -95,30 +94,32 @@ namespace sclui {
         public:
             void(*onButtonPress)() = nullptr;
 
-            Button(std::string pName,int px, int pY,int pColor, int pColorFocus);
+            Button(std::string_view  pName,int px, int pY,int pColor, int pColorFocus);
 
             
-            virtual void getValue() override;
+            virtual void *getValue() override;
         };
 
     class Text : public BasicItem{
         private:
             virtual void draw(bool v) override;
         public:
-            Text(std::string pName,int px, int pY,int pColor);
+            Text(std::string_view  pName,int px, int pY,int pColor);
 
             
     };
 
     class Screen {
+        friend class BasicItem;
+        friend class TextBox;
+        friend class Button;
+        friend class CheckBox;
         private:
             std::string title;
-            bool border = true, isDragging = false,isFocused = false;
-            int x,y,width, height,vecIndex,subScreenIndex;
+            bool isDragging = false,isFocused = false;
+            int vecIndex,subScreenIndex;
             BasicItem *currentItem;
-            std::vector<BasicItem *> items = {};
-            std::vector<Screen *> subScreens = {};
-            Screen *motherScreen = nullptr;
+            
             void run();
             void drawFrame(int v);
             void drawItems();
@@ -131,14 +132,16 @@ namespace sclui {
             void moveHelper(int i);
         
         public:
-            Screen(std::string pTitle, int pWidth, int pHeight, int pX, int pY);
+
+            int x,y,width, height;
+            Screen(std::string_view pTitle, int pWidth, int pHeight, int pX, int pY);
             
-            void(*onDestruct)();
-            void(*onFocus)();
-            void(*onUnFocus)();
-            void(*onDragBegin)();
-            void(*onDrag)();
-            void(*onDrop)();
+            void(*onDestruct)() = nullptr;
+            void(*onFocus)()= nullptr;
+            void(*onUnFocus)()= nullptr;
+            void(*onDragBegin)()= nullptr;
+            void(*onDrag)()= nullptr;
+            void(*onDrop)()= nullptr;
 
             
             void addItem(BasicItem *i);
@@ -151,24 +154,15 @@ namespace sclui {
 
             void centerItem(Screen::axis pAxis, BasicItem *i);
 
-            BasicItem *getItemAt(int index);
-            Screen *getSubScreenAt(int index);
+            std::vector<BasicItem *> items = {};
+            std::vector<Screen *> subScreens = {};
 
             void draw();
             void update();
-            
-            int getWith() const;
-            int getHeight() const;
-            int getX() const;
-            int getY() const;
-
-            void setWith(int v);
-            void setHeight(int v);
-            void setX(int v);
-            void setY(int v);
 
             void setBorder(bool v);
-            Screen *getMotherScreen() const;
+            bool border = true;
+            Screen *motherScreen = nullptr;
         };
 
 }

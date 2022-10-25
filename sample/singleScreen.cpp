@@ -14,10 +14,10 @@ void returnOnV(int c) {
 
 void test() {
     mainScreen.setTitle("world!");
-    mainScreen.setX(5);
-    mainScreen.setY(5);
-    mainScreen.setWith(35);
-    mainScreen.setHeight(20);
+    mainScreen.x = 5;
+    mainScreen.y = 5;
+    mainScreen.width = 35;
+    mainScreen.height = 25;
     mainScreen.update();
 }
 
