@@ -42,11 +42,12 @@ namespace sclui {
             void (*onDraw)() = nullptr;
             void (*onDestruct)() = nullptr;
         protected:
+            types type;
+            void chooseColor(bool b);
+        public:
             std::string name = ("");
             int x,y,color, colorFocus;
             bool interactable,visible = true;
-            types type;
-            void chooseColor(bool b);
     };
 
     template <class T>
