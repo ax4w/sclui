@@ -81,46 +81,6 @@ namespace sclui {
         return true;
     }
 
-    BasicItem::types BasicItem::getType() const {
-        return type;
-    }
-
-    bool BasicItem::isVisible() const {
-        return visible;
-    }
-    void BasicItem::setVisible(bool v) {
-        visible = v;
-    }
-
-    void BasicItem::setColor(int c) {
-        color = c;
-    }
-    void BasicItem::setColorFocus(int c) {
-        colorFocus = c;
-    }
-
-    int BasicItem::getX() const {
-        return x;
-    }
-    int BasicItem::getY() const {
-        return y;
-    }
-
-    void BasicItem::setX(int pX) {
-        x = pX;
-    }
-    void BasicItem::setY(int pY) {
-        y = pY;
-    }
-
-    bool BasicItem::isInteractable() const {
-        return interactable;
-    }
-    
-    void BasicItem::setInteractable(bool v) {
-        interactable = v;
-    }
-
     void BasicItem::moveTo() {
         move(currentScreen->y + y,currentScreen->x + x);
     }
@@ -135,16 +95,11 @@ namespace sclui {
     
 
 
-    Button::Button(std::string_view  pName, int pX, int pY, 
-    int pColor, int pColorFocus) {
-        name = pName;
+    Button::Button(std::string  name, int x, int y, 
+    int color, int colorFocus) 
+        : Interactable(name,x,y,color,colorFocus) {
         type = types::BUTTON;
-        color = pColor;
-        colorFocus = pColorFocus;
         itemIndex = cIndex++;
-        interactable = true;
-        x = pX;
-        y = pY;
     }
 
     void Button::draw(bool v) {
@@ -155,19 +110,10 @@ namespace sclui {
         this->moveTo();
     }
 
-    void *Button::getValue() {
-        return nullptr;
-    }
-
-    CheckBox::CheckBox(std::string_view  pName,int pX, int pY,int pColor, 
-    int pColorFocus, bool defaultValue) {
-        name = pName;
-        x = pX;
-        y = pY;
-        color = pColor;
-        colorFocus = pColorFocus;
-        value = defaultValue;
-        interactable = true;
+    CheckBox::CheckBox(std::string  name,int x, int y,int color, 
+    int colorFocus, bool pvalue) 
+        : Interactable(name,x,y,color,colorFocus) {
+        value = pvalue;
         type = types::CHECKBOX;
         itemIndex = cIndex++;
     }
@@ -180,38 +126,26 @@ namespace sclui {
         this->moveTo();
     }
 
-    bool *CheckBox::getValue() {
-        return &value;
-    }
-
-    void CheckBox::setValue(bool v) {
-        value = v;
-    }
-
-    Text::Text(std::string_view  pName,int pX, int pY,int pColor) {
-        name = pName;
-        x = pX;
-        y = pY;
-        color = pColor;
-        interactable = false;
+    Text::Text(std::string  name,int x, int y,int color)
+    : BasicItem(name,x,y,color,COLOR_BLANK) {
         type = types::BASIC;
         itemIndex = cIndex++;
 
     }
     void Text::draw(bool v) {
-        int oldY = this->getY();
+        int oldY = this->y;
         chooseColor(v);
         curs_set(0);
         this->moveTo();
         for(char n : name) {
             if(n == '\n') {
-                this->setY(this->getY() + 1);
+                this->y = this->y++;
                 this->moveTo();
                 continue;
             }
             printw("%c",n);
         }
-        this->setY(oldY);
+        this->y = oldY;
         this->moveTo();
     }
 
@@ -234,7 +168,7 @@ namespace sclui {
         if(items.size() == 0) return nullptr;
         int index = 0;
         for(auto &i: items) {
-            if(i->isInteractable() && i->isVisible()) {
+            if(i->interactable && i->visible) {
                 vecIndex = index;
                 return i;
             }
@@ -254,19 +188,15 @@ namespace sclui {
         return nullptr;
     }
 
-    TextBox::TextBox(std::string_view  pName,int pX, int pY, int pMaxLength,int pColor, 
-    int pColorFocus, bool(*pFilter)(int), char pSplitter) {
-        name = pName;
-        x = pX;
-        y = pY;
-        maxLength = pMaxLength;
+    TextBox::TextBox(std::string  name,int x, int y,int color, 
+    int colorFocus, int maxlength , bool(*pfilter)(int), char pSplitter) 
+        : Interactable(name,x,y,color,colorFocus) {
+        maxLength = maxlength;
+        filter = pfilter;
+        splitter = pSplitter;
         itemIndex = cIndex++;
         interactable = true;
         type = types::TEXTBOX;
-        color = pColor;
-        colorFocus = pColorFocus;
-        filter = pFilter;
-        splitter = pSplitter;
     }
 
     void TextBox::defaultKeyPressEvent(int c) {
@@ -292,9 +222,6 @@ namespace sclui {
         printw("%s",value.c_str());
     }
 
-    std::string *TextBox::getValue() {
-        return &value;
-    }
     void TextBox::append(char c) {
         value.push_back(c);
     }
@@ -346,7 +273,7 @@ namespace sclui {
     }
 
     bool Screen::selectNext(BasicItem *i) {
-        if(!i->isInteractable() || !i->isVisible()) return false;
+        if(!i->interactable || !i->visible) return false;
         if(i->onDraw != nullptr) (*(i->onDraw))();
         i->draw(true);
         return true;
@@ -382,7 +309,7 @@ namespace sclui {
 
     void Screen::drawItems() {
         for(auto &i : items) {
-            if(i->isVisible()) {
+            if(i->visible) {
                 if(i->onDraw != nullptr) (*(i->onDraw))();
                 i->draw(false);
             }
@@ -473,10 +400,10 @@ namespace sclui {
                     doMove(c == UP_KEY ? 1 : 0);
                     break;
                 case CONFIRM_KEY:
-                    switch(currentItem->getType()) {
+                    switch(currentItem->type) {
                         case BasicItem::types::CHECKBOX:
                             cCast = (CheckBox*)currentItem;
-                            cCast->setValue(*(cCast->getValue())?false:true);
+                            cCast->value = (cCast->value?false:true);
                             if(*cCast->onCheckBoxChange != nullptr)
                                 (*(cCast->onCheckBoxChange))();
                             cCast = nullptr;
@@ -500,9 +427,11 @@ namespace sclui {
                 default:
                     textBoxHandler:
                         if(currentItem != nullptr) {
-                            if(currentItem->getType() == BasicItem::types::TEXTBOX) {
+                            if(currentItem->type == BasicItem::types::TEXTBOX) {
+                                
                                 tbCast = (TextBox*)currentItem;
                                 if(c != KEY_BACKSPACE && !(*tbCast->filter)(c)) continue;
+                                
                                 if(*tbCast->onKeyPress == nullptr) {
                                     tbCast->defaultKeyPressEvent(c);
                                 }else{
@@ -553,24 +482,24 @@ namespace sclui {
     void Screen::centerItem(Screen::axis pAxis, BasicItem *i) {
         switch(pAxis) {
             case X:
-                switch(i->getType()) {
+                switch(i->type) {
                     case BasicItem::types::TEXTBOX:
-                        i->setX((width / 2) - ((i->name.length() /2) + 
-                                ((((TextBox*) i)->maxLength + 4) / 2)));
+                        i->x = (width / 2) - ((i->name.length() /2) + 
+                                ((((TextBox*) i)->maxLength + 4) / 2));
                         break;
                     case BasicItem::types::CHECKBOX:
-                        i->setX((width / 2) - ((i->name.length() /2) + 4));
+                        i->x = (width / 2) - ((i->name.length() /2) + 4);
                         break;
                     case BasicItem::types::BUTTON:
-                        i->setX((width / 2) - ((i->name.length() /2) + 2));
+                        i->x = (width / 2) - ((i->name.length() /2) + 2);
                         break;
                     default:
-                        i->setX((width / 2) - (i->name.length() /2));
+                        i->x = (width / 2) - (i->name.length() /2);
                         break;
                 }
                 break;
             case Y:
-                i->setY(height / 2);
+                i->y = height / 2;
                 break;
             default:
                 centerItem(X,i);

@@ -2,7 +2,7 @@
 
 using namespace sclui;
 //global scope to access it in extOnV
-static TextBox textbox1 = TextBox("text",1,9,5,COLOR_BLUE, COLOR_GREEN, &TextBoxFilterIsNumber,'|');
+static TextBox textbox1 = TextBox("text",1,9,COLOR_BLUE, COLOR_GREEN, 5, &TextBoxFilterIsNumber,'|');
 static Screen mainScreen = Screen("Test",30,15,0,0); //no pointer
 
 void returnOnV(int c) {
@@ -32,7 +32,7 @@ int main(void) {
     //every screen will be freed when a new screen is loaded
     button1.onButtonPress = &test; //register press event(
     Text text1 = Text("Hallo\nwelt",1,3,COLOR_BLANK);
-    CheckBox checkbox1 = CheckBox("check",1,6,COLOR_CYAN, COLOR_RED,false);
+    CheckBox checkbox1 = CheckBox("check",1,6,COLOR_CYAN, COLOR_RED,true);
     checkbox1.onCheckBoxChange = &doQuit; //register checkbox change event
 
 

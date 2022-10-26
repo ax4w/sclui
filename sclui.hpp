@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <string_view>
+#include <any>
 #include <curses.h>
 #include <assert.h>
 
@@ -30,88 +31,86 @@ namespace sclui {
                 CHECKBOX = 2,
                 TEXTBOX = 3
             };
-            int itemIndex;
-            types getType() const;
-            int getX() const;
-            int getY() const;
-            void setX(int pX);
-            void setY(int pY);
-            bool isInteractable() const;
-            void setInteractable(bool v);
-            void moveTo();
-            void setColor(int c);
-            void setColorFocus(int c);
-            bool isVisible() const;
-            void setVisible(bool v);
             virtual void draw(bool v) = 0;
+            void moveTo();
             void (*onDraw)() = nullptr;
             void (*onDestruct)() = nullptr;
-        protected:
-            types type;
-            void chooseColor(bool b);
-        public:
             std::string name = ("");
             int x,y,color, colorFocus;
-            bool interactable,visible = true;
+            bool visible = true;
+            BasicItem(std::string name, int x, int y, int color, int colorFocus):
+                name{name},x{x},y{y},color{color},colorFocus{colorFocus} {}
+        protected:
+            bool interactable = false;
+            int itemIndex;
+            types type;
+            void chooseColor(bool b);
     };
 
-    class TextBox : public BasicItem {
+    template<class T>
+    class Interactable : public BasicItem {
+        public:
+            bool enabled = true;
+            T value;
+            Interactable(std::string name, int x, int y, int color, int colorFocus) :
+                BasicItem(name,x,y,color,colorFocus)
+                {interactable = true;};
+    };
+
+    class TextBox : public Interactable<std::string> {
         private:
             virtual void draw(bool v) override;
             char splitter;
+            
         public:
+            
             bool(*filter)(int) = nullptr;
 
             void(*onKeyPress)(int) = nullptr;
 
             void defaultKeyPressEvent(int c);
-
-            TextBox(std::string_view  pName,int px, int pY, int pMaxLength,int pColor, int pColorFocus, bool(*pFilter)(int), char pSplitter);
-            
-            std::string *getValue();
             int maxLength;
-            std::string value;
+            TextBox(std::string  name,int x, int y,int color, int colorFocus,int maxLength, bool(*filter)(int), char splitter);
+            
+            
             void append(char c);
             void pop();
     };
 
-    class CheckBox : public BasicItem {
+    class CheckBox : public Interactable<bool> {
         private:
-            bool value;
             virtual void draw(bool v) override;
         public:
-            CheckBox(std::string_view  pName,int px, int pY,int pColor, int pColorFocus, bool defaultValue);
+
+            CheckBox(std::string  name,int x, int y,int color, int colorFocus, bool value);
 
             void(*onCheckBoxChange)() = nullptr;
-            bool *getValue();
-            void setValue(bool v);
+
     };
 
-    class Button : public BasicItem {   
+    class Button : public Interactable<std::any> {   
         private:
             virtual void draw(bool v) override;
+            
         public:
             void(*onButtonPress)() = nullptr;
+            Button(std::string  pName,int px, int pY,int pColor, int pColorFocus);
 
-            Button(std::string_view  pName,int px, int pY,int pColor, int pColorFocus);
-
-            void *getValue();
         };
 
     class Text : public BasicItem{
         private:
             virtual void draw(bool v) override;
         public:
-            Text(std::string_view  pName,int px, int pY,int pColor);
+            Text(std::string  pName,int px, int pY,int pColor);
 
             
     };
 
     class Screen {
         friend class BasicItem;
-        friend class TextBox;
-        friend class Button;
         friend class CheckBox;
+        friend class Interactable<bool>;
         private:
             std::string title;
             bool isDragging = false,isFocused = false;

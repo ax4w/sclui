@@ -17,7 +17,7 @@ void myQuit() {
 
 void switchScreen() {
     Button b3 = Button("Quit",1,1,COLOR_WHITE,COLOR_RED);
-    CheckBox c1 = CheckBox("Test",1,4,COLOR_WHITE,COLOR_BLUE,false);
+    CheckBox c1 = CheckBox("Test",1,4,COLOR_WHITE,COLOR_BLUE,true);
 
     b3.onButtonPress = &doQuit;
     Screen newScreen = Screen("hallo",20,10,0,0);
