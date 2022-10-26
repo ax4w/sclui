@@ -81,8 +81,8 @@ namespace sclui {
         return true;
     }
 
-    void BasicItem::moveTo() {
-        move(currentScreen->y + y,currentScreen->x + x);
+    void BasicItem::moveTo(int yOffset = 0, int xOffset = 0) {
+        move(currentScreen->y + y + yOffset,currentScreen->x + x + xOffset);
     }
 
     void BasicItem::chooseColor(bool b) {
@@ -95,9 +95,10 @@ namespace sclui {
     
 
 
-    Button::Button(std::string  name, int x, int y, 
-    int color, int colorFocus) 
-        : Interactable(name,x,y,color,colorFocus) {
+    Button::Button( std::string  name, int x, int y, 
+                    int color, int colorFocus) 
+    :Interactable(name,x,y,color,colorFocus,nullptr) 
+    {
         type = types::BUTTON;
         itemIndex = cIndex++;
     }
@@ -110,10 +111,10 @@ namespace sclui {
         this->moveTo();
     }
 
-    CheckBox::CheckBox(std::string  name,int x, int y,int color, 
-    int colorFocus, bool pvalue) 
-        : Interactable(name,x,y,color,colorFocus) {
-        value = pvalue;
+    CheckBox::CheckBox( std::string  name,int x, int y,int color, 
+                        int colorFocus, bool value) 
+    :Interactable(name,x,y,color,colorFocus,value) 
+    {
         type = types::CHECKBOX;
         itemIndex = cIndex++;
     }
@@ -127,11 +128,12 @@ namespace sclui {
     }
 
     Text::Text(std::string  name,int x, int y,int color)
-    : BasicItem(name,x,y,color,COLOR_BLANK) {
+    :BasicItem(name,x,y,color,COLOR_BLANK)
+    {
         type = types::BASIC;
         itemIndex = cIndex++;
-
     }
+    
     void Text::draw(bool v) {
         int oldY = this->y;
         chooseColor(v);
@@ -139,7 +141,7 @@ namespace sclui {
         this->moveTo();
         for(char n : name) {
             if(n == '\n') {
-                this->y = this->y++;
+                this->y++;
                 this->moveTo();
                 continue;
             }
@@ -149,16 +151,11 @@ namespace sclui {
         this->moveTo();
     }
 
-    //screen
-    Screen::Screen(std::string_view pTitle,int pWidth, int pHeight, int pX, int pY) {
-        width = pWidth;
-        height = pHeight;
-        title = pTitle;
+    Screen::Screen(std::string_view title, int width, int height, int x, int y):
+    title{title},width{width},height{height},x{x},y{y}
+    {
         subScreenIndex = 0;
-        x = pX;
-        y = pY;
     }
-
 
     void Screen::addItem(BasicItem *i) {
         items.push_back(i);
@@ -166,34 +163,31 @@ namespace sclui {
 
     BasicItem *Screen::getFirstInteractableItem() {
         if(items.size() == 0) return nullptr;
-        int index = 0;
-        for(auto &i: items) {
-            if(i->interactable && i->visible) {
-                vecIndex = index;
-                return i;
-            }
-            index++;
-            
+        int i = -1;
+        bool result = false;
+        while(!result) {
+            i++;
+            result = items.at(i)->interactable && items.at(i)->visible;
         }
-        return nullptr;
+        return result ? items.at(i) : nullptr;
     }
 
     BasicItem *Screen::getItemByName(const char *name) {
-        //auto generate type
-        for(auto &i : items) {
-            if(i->name.compare(name)== 0) {
-                return i;
-            }
+        if(items.size() == 0) return nullptr;
+        int i = -1;
+        bool result = false;
+        while(!result) {
+            i++;
+            result = items.at(i)->name.compare(name) == 0;
         }
-        return nullptr;
+        return result ? items.at(i) : nullptr;
     }
 
     TextBox::TextBox(std::string  name,int x, int y,int color, 
-    int colorFocus, int maxlength , bool(*pfilter)(int), char pSplitter) 
-        : Interactable(name,x,y,color,colorFocus) {
-        maxLength = maxlength;
-        filter = pfilter;
-        splitter = pSplitter;
+                     int colorFocus, int maxLength , bool(*filter)(int), char splitter):
+    Interactable(name,x,y,color,colorFocus,""),
+    maxLength{maxLength}, filter{filter}, splitter{splitter}
+    {
         itemIndex = cIndex++;
         interactable = true;
         type = types::TEXTBOX;
@@ -218,7 +212,7 @@ namespace sclui {
         printw("[ %s%c" , name.c_str(),splitter); 
         for(int i = 0; i < maxLength; i++) printw(" ");
         printw("]");
-        move(currentScreen->y+ y, currentScreen->x + x+3 + name.length());
+        moveTo(0,3 + name.length());
         printw("%s",value.c_str());
     }
 
@@ -479,9 +473,9 @@ namespace sclui {
         currentScreen->run(); 
     }
 
-    void Screen::centerItem(Screen::axis pAxis, BasicItem *i) {
+    void Screen::centerItem(axis pAxis, BasicItem *i) {
         switch(pAxis) {
-            case X:
+            case axis::X:
                 switch(i->type) {
                     case BasicItem::types::TEXTBOX:
                         i->x = (width / 2) - ((i->name.length() /2) + 
@@ -498,22 +492,18 @@ namespace sclui {
                         break;
                 }
                 break;
-            case Y:
+            case axis::Y:
                 i->y = height / 2;
                 break;
             default:
-                centerItem(X,i);
-                centerItem(Y,i);
+                centerItem(axis::X,i);
+                centerItem(axis::Y,i);
                 break;
         }
     }
     void Screen::addSubScreen(Screen *i) {
         i->motherScreen = this;
         subScreens.push_back(i);
-    }
-
-    void Screen::setTitle(std::string s) {
-        title = s;
     }
     void Screen::setBorder(bool v) {
         border = v;

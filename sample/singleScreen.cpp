@@ -13,7 +13,7 @@ void returnOnV(int c) {
 }
 
 void test() {
-    mainScreen.setTitle("world!");
+    mainScreen.title = "yay!";
     mainScreen.x = 5;
     mainScreen.y = 5;
     mainScreen.width = 35;
@@ -44,11 +44,11 @@ int main(void) {
     mainScreen.addItem(&checkbox1);
     mainScreen.addItem(&textbox1);
 
-    //center n x
-    mainScreen.centerItem(mainScreen.X,&button1);
-    mainScreen.centerItem(mainScreen.X,&text1);
-    mainScreen.centerItem(mainScreen.X,&checkbox1);
-    mainScreen.centerItem(mainScreen.X,&textbox1);
+    //center
+    mainScreen.centerItem(axis::X,&button1);
+    mainScreen.centerItem(axis::X,&text1);
+    mainScreen.centerItem(axis::X,&checkbox1);
+    mainScreen.centerItem(axis::X,&textbox1);
 
     mainScreen.draw();
     

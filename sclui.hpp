@@ -21,18 +21,24 @@ namespace sclui {
 
     int getMaxX();
     int getMaxY();
+
+    enum class axis {
+        X,
+        Y,
+        XY
+    };
     
     class BasicItem {
         friend class Screen;
         public:
             enum class types {
-                BASIC = 0,
-                BUTTON = 1,
-                CHECKBOX = 2,
-                TEXTBOX = 3
+                BASIC,
+                BUTTON,
+                CHECKBOX,
+                TEXTBOX
             };
             virtual void draw(bool v) = 0;
-            void moveTo();
+            void moveTo(int yOffet, int xOffset);
             void (*onDraw)() = nullptr;
             void (*onDestruct)() = nullptr;
             std::string name = ("");
@@ -52,8 +58,9 @@ namespace sclui {
         public:
             bool enabled = true;
             T value;
-            Interactable(std::string name, int x, int y, int color, int colorFocus) :
-                BasicItem(name,x,y,color,colorFocus)
+            Interactable(std::string name, int x, int y, int color, int colorFocus, T value) :
+                BasicItem(name,x,y,color,colorFocus),
+                value{value}
                 {interactable = true;};
     };
 
@@ -61,18 +68,13 @@ namespace sclui {
         private:
             virtual void draw(bool v) override;
             char splitter;
-            
+
         public:
-            
+            TextBox(std::string  name,int x, int y,int color, int colorFocus,int maxLength, bool(*filter)(int), char splitter);
             bool(*filter)(int) = nullptr;
-
             void(*onKeyPress)(int) = nullptr;
-
             void defaultKeyPressEvent(int c);
             int maxLength;
-            TextBox(std::string  name,int x, int y,int color, int colorFocus,int maxLength, bool(*filter)(int), char splitter);
-            
-            
             void append(char c);
             void pop();
     };
@@ -80,12 +82,10 @@ namespace sclui {
     class CheckBox : public Interactable<bool> {
         private:
             virtual void draw(bool v) override;
+
         public:
-
             CheckBox(std::string  name,int x, int y,int color, int colorFocus, bool value);
-
             void(*onCheckBoxChange)() = nullptr;
-
     };
 
     class Button : public Interactable<std::any> {   
@@ -93,9 +93,8 @@ namespace sclui {
             virtual void draw(bool v) override;
             
         public:
-            void(*onButtonPress)() = nullptr;
             Button(std::string  pName,int px, int pY,int pColor, int pColorFocus);
-
+            void(*onButtonPress)() = nullptr;
         };
 
     class Text : public BasicItem{
@@ -103,16 +102,14 @@ namespace sclui {
             virtual void draw(bool v) override;
         public:
             Text(std::string  pName,int px, int pY,int pColor);
-
-            
     };
 
     class Screen {
         friend class BasicItem;
         friend class CheckBox;
-        friend class Interactable<bool>;
+
         private:
-            std::string title;
+            
             bool isDragging = false,isFocused = false;
             int vecIndex,subScreenIndex;
             BasicItem *currentItem;
@@ -127,27 +124,25 @@ namespace sclui {
             void handleDrag(int c);
             void switchFocus();
             void moveHelper(int i);
+
         public:
+            Screen(std::string_view title, int width, int height, int x, int y);
+
+            std::string title;
             int x,y,width, height;
-            Screen(std::string_view pTitle, int pWidth, int pHeight, int pX, int pY);
-            
             void(*onDestruct)() = nullptr;
             void(*onFocus)()= nullptr;
             void(*onUnFocus)()= nullptr;
             void(*onDragBegin)()= nullptr;
             void(*onDrag)()= nullptr;
             void(*onDrop)()= nullptr;
-
-            
             void addItem(BasicItem *i);
             void addSubScreen(Screen *i);
-            void setTitle(std::string s);
-
             BasicItem *getItemByName(const char *name);
 
-            enum axis {X,Y,XY};
+            
 
-            void centerItem(Screen::axis pAxis, BasicItem *i);
+            void centerItem(axis pAxis, BasicItem *i);
 
             std::vector<BasicItem *> items = {};
             std::vector<Screen *> subScreens = {};

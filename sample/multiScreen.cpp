@@ -41,10 +41,11 @@ int main(void) {
 
     subScreen2 = new Screen("S2", 30, 15 , 12, 12);
     Button b4 = Button("next",2,4,COLOR_BLUE,COLOR_RED);
-    TextBox text = TextBox("textbox",2,6,10,COLOR_WHITE,COLOR_GREEN, &TextBoxFilterIsText,'|');
+    TextBox text = TextBox("textbox",2,6,COLOR_WHITE,COLOR_GREEN,10, &TextBoxFilterIsText,'|');
 
-    b4.onButtonPress = &switchScreen;
     subScreen2->addItem(&b4);
+    //example for get item by name
+    ((Button*)subScreen2->getItemByName("next"))->onButtonPress = &switchScreen;
     subScreen2->addItem(&text);
     mainScreen.addSubScreen(subScreen1);
     mainScreen.addSubScreen(subScreen2);
