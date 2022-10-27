@@ -44,7 +44,7 @@ namespace sclui {
             std::string name = ("");
             int x,y,color, colorFocus;
             bool visible = true;
-            BasicItem(std::string name, int x, int y, int color, int colorFocus):
+            BasicItem(std::string_view name, int x, int y, int color, int colorFocus):
                 name{name},x{x},y{y},color{color},colorFocus{colorFocus} {}
         protected:
             bool interactable = false;
@@ -58,7 +58,7 @@ namespace sclui {
         public:
             bool enabled = true;
             T value;
-            Interactable(std::string name, int x, int y, int color, int colorFocus, T value) :
+            Interactable(std::string_view name, int x, int y, int color, int colorFocus, T value) :
                 BasicItem(name,x,y,color,colorFocus),
                 value{value}
                 {interactable = true;};
@@ -70,7 +70,7 @@ namespace sclui {
             char splitter;
 
         public:
-            TextBox(std::string  name,int x, int y,int color, int colorFocus,int maxLength, bool(*filter)(int), char splitter);
+            TextBox(std::string_view  name,int x, int y,int color, int colorFocus,int maxLength, bool(*filter)(int), char splitter);
             bool(*filter)(int) = nullptr;
             void(*onKeyPress)(int) = nullptr;
             void defaultKeyPressEvent(int c);
@@ -84,7 +84,7 @@ namespace sclui {
             virtual void draw(bool v) override;
 
         public:
-            CheckBox(std::string  name,int x, int y,int color, int colorFocus, bool value);
+            CheckBox(std::string_view  name,int x, int y,int color, int colorFocus, bool value);
             void(*onCheckBoxChange)() = nullptr;
     };
 
@@ -93,7 +93,7 @@ namespace sclui {
             virtual void draw(bool v) override;
             
         public:
-            Button(std::string  pName,int px, int pY,int pColor, int pColorFocus);
+            Button(std::string_view  name,int x, int y,int color, int colorFocus);
             void(*onButtonPress)() = nullptr;
         };
 
@@ -101,7 +101,7 @@ namespace sclui {
         private:
             virtual void draw(bool v) override;
         public:
-            Text(std::string  pName,int px, int pY,int pColor);
+            Text(std::string_view  name,int x, int y,int color);
     };
 
     class Screen {

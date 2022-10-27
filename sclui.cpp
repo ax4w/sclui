@@ -95,7 +95,7 @@ namespace sclui {
     
 
 
-    Button::Button( std::string  name, int x, int y, 
+    Button::Button( std::string_view  name, int x, int y, 
                     int color, int colorFocus) 
     :Interactable(name,x,y,color,colorFocus,nullptr) 
     {
@@ -111,7 +111,7 @@ namespace sclui {
         this->moveTo();
     }
 
-    CheckBox::CheckBox( std::string  name,int x, int y,int color, 
+    CheckBox::CheckBox( std::string_view  name,int x, int y,int color, 
                         int colorFocus, bool value) 
     :Interactable(name,x,y,color,colorFocus,value) 
     {
@@ -127,7 +127,7 @@ namespace sclui {
         this->moveTo();
     }
 
-    Text::Text(std::string  name,int x, int y,int color)
+    Text::Text(std::string_view  name,int x, int y,int color)
     :BasicItem(name,x,y,color,COLOR_BLANK)
     {
         type = types::BASIC;
@@ -183,7 +183,7 @@ namespace sclui {
         return result ? items.at(i) : nullptr;
     }
 
-    TextBox::TextBox(std::string  name,int x, int y,int color, 
+    TextBox::TextBox(std::string_view  name,int x, int y,int color, 
                      int colorFocus, int maxLength , bool(*filter)(int), char splitter):
     Interactable(name,x,y,color,colorFocus,""),
     maxLength{maxLength}, filter{filter}, splitter{splitter}
