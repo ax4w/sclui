@@ -150,7 +150,6 @@ namespace sclui {
             void draw();
             void update();
 
-            void setBorder(bool v);
             bool border = true;
             Screen *motherScreen = nullptr;
         };

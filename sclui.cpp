@@ -257,11 +257,11 @@ namespace sclui {
         }
         for(int i = 0; i <= height; i++) {
             move(y + i, x);
-            printw("%c",V_FRAME);
+            printw("%c",(i == 0 || i == height) ? '+' : V_FRAME);
         }
         for(int i = 0; i <= height; i++) {
             move(y + i, x + width);
-            printw("%c",V_FRAME);
+            printw("%c",(i == 0 || i == height) ? '+' : V_FRAME);
         }
         attroff(COLOR_PAIR(1));
     }
@@ -504,8 +504,5 @@ namespace sclui {
     void Screen::addSubScreen(Screen *i) {
         i->motherScreen = this;
         subScreens.push_back(i);
-    }
-    void Screen::setBorder(bool v) {
-        border = v;
     }
 }
