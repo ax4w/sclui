@@ -81,7 +81,7 @@ Public Fields
 
     void (*onDraw)(); //event, when drawn
     void (*onDestruct)(); //event, when destroyed
-    std::string name = (""); //name of the elemt
+    std::string name = (""); //name of the element
     int x,y,color, colorFocus; //x- and y-position, color and focus color
     bool visible = true; //visibility
 
