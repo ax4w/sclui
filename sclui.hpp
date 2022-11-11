@@ -37,17 +37,18 @@ namespace sclui {
                 CHECKBOX,
                 TEXTBOX
             };
-            virtual void draw(bool v) = 0;
-            void moveTo(int yOffet, int xOffset);
             void (*onDraw)() = nullptr;
             void (*onDestruct)() = nullptr;
             std::string name = ("");
             int x,y,color, colorFocus;
             bool visible = true;
-            BasicItem(std::string_view name, int x, int y, int color, int colorFocus):
-                name{name},x{x},y{y},color{color},colorFocus{colorFocus} {}
+            
         protected:
             bool interactable = false;
+            virtual void draw(bool v) = 0;
+            void moveTo(int yOffet, int xOffset);
+            BasicItem(std::string_view name, int x, int y, int color, int colorFocus):
+                name{name},x{x},y{y},color{color},colorFocus{colorFocus} {}
             int itemIndex;
             types type;
             void chooseColor(bool b);
@@ -58,6 +59,7 @@ namespace sclui {
         public:
             bool enabled = true;
             T value;
+        protected:
             Interactable(std::string_view name, int x, int y, int color, int colorFocus, T value) :
                 BasicItem(name,x,y,color,colorFocus),
                 value{value}

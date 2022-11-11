@@ -414,6 +414,7 @@ namespace sclui {
                                 goto textBoxHandler;
                             break;
                         #endif
+                        default: break;
                     }
                     if(currentItem->onDraw != nullptr) (*(currentItem->onDraw))();
                     currentItem->draw(true);
